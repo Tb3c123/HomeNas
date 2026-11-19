@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v0.3.0] - 2026-11-18
+### Added
+- `docs/06-technical-specs.md`: Đặc tả hạ tầng Docker Stack (`kanboard`, `docker-proxy`, `agy-runtime`), schema cấu hình plug-in `project.yaml` và hợp đồng 4 module cho `kanboard-client` (JSON-RPC).
+
 ## [v0.2.1] - 2026-11-18 *(Phase 2 Complete — tag `v0.2.1-phase2`)*
 ### Added
 - `docs/05-user-flows.md`: Đặc tả 3 luồng vận hành cốt lõi (Kanboard-as-Message-Bus, Fire-and-Forget kèm **Inline Compact Receipt** & **Director Unread Digest** trong `agy` UI, và vòng lặp tự học Hermes có duyệt Skill).
