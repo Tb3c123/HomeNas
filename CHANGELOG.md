@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v0.3.2] - 2026-11-19
+### Added
+- `docs/departments/01-dept-nas-ops.md`: Thiết kế chuyên sâu Phòng 1 (`dept-nas-ops`) cho phần cứng Morefine N6 (Intel N200, 16GB RAM, 256GB SSD, 20TB HDD Acasis), container `homenas-watchdog` (0-token, RAM-only, Telegram emergency auto-stop), và tích hợp `agy` native (`/automation` qua Remote Control, `/schedule`, `hooks.json`).
+
 ## [v0.3.1] - 2026-11-19
 ### Added
 - `docs/07-system-design-blueprint.md`: Bản thiết kế tổng thể 4 lớp (Control, AI & Orchestration, State & Automation, Target & Security), hợp đồng liên kết và mô hình bảo mật 4 lớp.
