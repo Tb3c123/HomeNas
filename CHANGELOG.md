@@ -4,7 +4,7 @@ Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orch
 
 ## [v0.3.1] - 2026-11-19
 ### Added
-- `docs/07-system-design-blueprint.md`: Bản thiết kế tổng thể toàn hệ thống (4-Plane Architecture, Execution Boundaries, Integration Contracts & Defense-in-Depth 4 lớp).
+- `docs/07-system-design-blueprint.md`: Bản thiết kế tổng thể 4 lớp (Control, AI & Orchestration, State & Automation, Target & Security), hợp đồng liên kết và mô hình bảo mật 4 lớp.
 
 ## [v0.3.0] - 2026-11-18
 ### Added
