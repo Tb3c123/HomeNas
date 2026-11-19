@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v0.2.0] - 2026-11-18
+### Added
+- `docs/04-information-architecture.md`: Thiết kế kiến trúc 2 tầng tách biệt **Shared Platform Infra** (Docker `agy` + `kanboard` + `shared/`) và **Plug-and-Play Multi-Project Workspaces** (qua `project.yaml`), kèm Sitemap Kanboard (1 Project = 1 Dự án, phân luồng theo Swimlanes).
+
 ## [v0.1.2] - 2026-11-18 *(Phase 1 Complete — tag `v0.1.2-phase1`)*
 ### Added
 - `docs/03-learning-and-token-budget.md`: Chốt chiến lược tự học 3 tầng (Hermes pattern + Memory Poisoning Guard) và 5 nguyên tắc kiểm soát quota token (Fire-and-Forget, Stateless Session, Zero-Noise Output...).
