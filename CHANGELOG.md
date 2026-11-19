@@ -4,7 +4,7 @@ Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orch
 
 ## [v0.3.2] - 2026-11-19
 ### Added
-- `docs/departments/01-dept-nas-ops.md`: Thiết kế chuyên sâu Phòng 1 (`dept-nas-ops`) cho phần cứng Morefine N6 (Intel N200, 16GB RAM, 256GB SSD, 20TB HDD Acasis), container `homenas-watchdog` (0-token, RAM-only, Telegram emergency auto-stop), và tích hợp `agy` native (`/automation` qua Remote Control, `/schedule`, `hooks.json`).
+- `docs/departments/01-dept-nas-ops.md`: Thiết kế chuyên sâu Phòng 1 (`dept-nas-ops`) cho phần cứng Morefine N6 (Intel N200, 16GB RAM, 256GB SSD, 20TB HDD dock Acasis, CasaOS Docker), container `homenas-watchdog` (0-token, lưu RAM flush 1 lần/ngày, Telegram khẩn cấp tự dừng container nặng) và tích hợp Antigravity `/automation` (qua Remote Control), `/schedule`, `hooks.json`.
 
 ## [v0.3.1] - 2026-11-19
 ### Added
