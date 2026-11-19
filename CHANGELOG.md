@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v0.3.1] - 2026-11-19
+### Added
+- `docs/07-system-design-blueprint.md`: Bản thiết kế tổng thể toàn hệ thống (4-Plane Architecture, Execution Boundaries, Integration Contracts & Defense-in-Depth 4 lớp).
+
 ## [v0.3.0] - 2026-11-18
 ### Added
 - `docs/06-technical-specs.md`: Đặc tả hạ tầng Docker Stack (`kanboard`, `docker-proxy`, `agy-runtime`), schema cấu hình plug-in `project.yaml` và hợp đồng 4 module cho `kanboard-client` (JSON-RPC).
