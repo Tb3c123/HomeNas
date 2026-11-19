@@ -10,7 +10,7 @@
 - **Multi-Session Project:**
   - **1 Main Chat (Director):** Tiếp nhận yêu cầu, phân rã nhiệm vụ, điều phối phòng ban và kiểm soát ngân sách token.
   - **N Sub-Chats (Workers / Phòng ban):** Mỗi phiên chuyên trách một miền nghiệp vụ độc lập, giữ context cục bộ để tối ưu hiệu năng.
-- **Task Memory & Tracking (Kanban):** **Vikunja** (Docker/SQLite, AGPLv3, OpenAPI REST API) làm nguồn sự thật duy nhất (Single Source of Truth) cho trạng thái tác vụ.
+- **Task Memory & Tracking (Kanban):** **Kanboard** (Docker/SQLite, MIT License, JSON-RPC API) làm nguồn sự thật duy nhất (Single Source of Truth) cho trạng thái tác vụ.
 - **Self-Learning Mechanism:** Kế thừa mô hình Closed Learning Loop từ **Hermes Agent** (`MEMORY.md`, `USER.md`, `skills/`) nhưng triển khai thuần bằng **AGY Skills + Local Memory** bên trong `agy`.
 
 ## 3. Ràng buộc cứng (Hard Constraints)
