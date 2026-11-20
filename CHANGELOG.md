@@ -2,6 +2,11 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.0.1] - 2026-11-19 *(Production Deployment Hotfix)*
+### Fixed
+- `tools/nas_ops/inspector_cli.py`: Bổ sung cờ `--daemon` cho vòng lặp giám sát 3 phút, flush 23:55, backup Kanboard 03:00 và tổng hợp tuần Chủ nhật 20:00.
+- `platform/docker-compose.yml`: Mount thêm `/dev/disk/by-id:/dev/disk/by-id:ro` cho container `homenas-watchdog` để chống đảo tên `sda`/`sdb` sau reboot.
+
 ## [v1.0.0] - 2026-11-19 *(Sprint 5 Complete — Production Ready Release)*
 ### Added
 - `shared/tools/project_loader/loader.py`: Bộ nạp cấu hình `project.yaml` đa dự án (0 external dependencies) và kiểm tra quyền hạn tool theo phòng ban.

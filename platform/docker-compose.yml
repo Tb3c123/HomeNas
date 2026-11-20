@@ -41,6 +41,7 @@ services:
     tmpfs:
       - /tmp:size=64m
     volumes:
+      - /dev/disk/by-id:/dev/disk/by-id:ro
       - /mnt/disk1:/mnt/disk1
       - /mnt/disk2:/mnt/disk2
       - ./data/kanboard/data:/kanboard-data:ro

@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-"""Zero-Noise NAS Inspector CLI & Watchdog Orchestrator for dept-nas-ops."""
+"""Zero-Noise NAS Inspector CLI & 0-Token Watchdog Daemon for dept-nas-ops."""
 
 import argparse
 import json
+import os
+import pathlib
 import sys
+import time
 from typing import Any
 
 from shared.tools.kanboard_client.service import KanboardService
+from tools.nas_ops.backup_kanboard import backup_kanboard_sqlite
 from tools.nas_ops.emergency import EmergencyExecutor
 from tools.nas_ops.policy import ThermalPolicyEngine
 from tools.nas_ops.reporter import ThermalReporter
@@ -25,6 +29,9 @@ class NasWatchdogCycle:
         self.emergency = emergency or EmergencyExecutor()
         self.reporter = reporter or ThermalReporter()
         self.kb = kb_service or KanboardService()
+        self._last_flush_day = ""
+        self._last_backup_day = ""
+        self._last_weekly_label = ""
 
     def run_once(self, snapshot: dict[str, Any] | None = None, elapsed_min: float = 3.0) -> dict[str, Any]:
         snap = snapshot or collect_snapshot()
@@ -48,11 +55,43 @@ class NasWatchdogCycle:
             self.reporter.send_telegram(msg)
         return verdict
 
+    def run_scheduled_housekeeping(self) -> None:
+        now = time.localtime()
+        day = time.strftime("%Y-%m-%d", now)
+        week = time.strftime("%Y-W%W", now)
+        if now.tm_hour == 23 and now.tm_min >= 55 and self._last_flush_day != day:
+            self.reporter.flush_daily_log_to_ssd(date_str=day)
+            self._last_flush_day = day
+        if now.tm_hour == 3 and now.tm_min < 10 and self._last_backup_day != day:
+            src = pathlib.Path("/kanboard-data/db.sqlite")
+            dst = pathlib.Path(os.environ.get("KANBOARD_BACKUP_DIR", "/mnt/disk2/Backups/kanboard"))
+            try:
+                if src.exists():
+                    backup_kanboard_sqlite(src, dst)
+            except Exception as exc:
+                self.reporter.send_telegram(f"❌ [NAS BACKUP FAIL] Kanboard SQLite backup error: {exc}")
+            self._last_backup_day = day
+        if now.tm_wday == 6 and now.tm_hour == 20 and now.tm_min < 10 and self._last_weekly_label != week:
+            md_path = self.reporter.generate_weekly_markdown(week_label=week)
+            self.kb.create_task(f"[NAS] Weekly Thermal Review {week}", f"File: {md_path}", tags=["weekly-review"], dedup_key=f"weekly:{week}")
+            self._last_weekly_label = week
+
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="nas-inspector", description="Zero-Noise NAS Inspector")
     parser.add_argument("--once", action="store_true", help="Run one watchdog evaluation cycle")
+    parser.add_argument("--daemon", action="store_true", help="Run continuous 3-minute 0-token watchdog loop")
     args = parser.parse_args(argv)
+    if args.daemon:
+        cycle = NasWatchdogCycle()
+        print("[homenas-watchdog] Started 3-minute 0-token thermal & backup daemon.", flush=True)
+        while True:
+            try:
+                cycle.run_once(elapsed_min=3.0)
+                cycle.run_scheduled_housekeeping()
+            except Exception as exc:
+                print(f"[homenas-watchdog] Cycle error: {exc}", file=sys.stderr, flush=True)
+            time.sleep(180)
     snap = collect_snapshot()
     if args.once:
         verdict = NasWatchdogCycle().run_once(snap)
