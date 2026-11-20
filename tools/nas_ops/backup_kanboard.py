@@ -17,7 +17,8 @@ def backup_kanboard_sqlite(
     ts = stamp or time.strftime("%Y%m%d-%H%M%S")
     dest_db = backup_dir / f"kanboard-{ts}.sqlite"
 
-    with sqlite3.connect(str(source_db)) as src_conn:
+    src_uri = f"file:{source_db}?mode=ro&immutable=1"
+    with sqlite3.connect(src_uri, uri=True) as src_conn:
         with sqlite3.connect(str(dest_db)) as dst_conn:
             src_conn.backup(dst_conn)
 
