@@ -2,6 +2,12 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v0.3.3] - 2026-11-19
+### Added
+- `docs/departments/02-dept-media.md`: Thiết kế chuyên sâu Phòng 2 (`dept-media`) theo cấu trúc thực tế — Mirror 1:1 trên `disk1`/`disk2` (loại bỏ `4K_UHD`), cân bằng dung lượng tự động, dồn trọn Season phim bộ về 1 ổ, ưu tiên Sub Việt + 2K/4K linh hoạt (phim bộ 1080p hạn chế TVRip), tải tuần tự 1-phim-1-lượt, canh 20–30% ETA viết mới 100%.
+### Changed
+- `docs/departments/01-dept-nas-ops.md`: Đồng bộ thông số 2 ổ 10TB thực tế (`sda` WD Gold + `sdb` WD Purple Pro) và khóa bảo vệ `adguard-home`, `portainer`, `antigravity-cli`.
+
 ## [v0.3.2] - 2026-11-19
 ### Added
 - `docs/departments/01-dept-nas-ops.md`: Thiết kế chuyên sâu Phòng 1 (`dept-nas-ops`) cho phần cứng Morefine N6 (Intel N200, 16GB RAM, 256GB SSD, 20TB HDD dock Acasis, CasaOS Docker), container `homenas-watchdog` (0-token, lưu RAM flush 1 lần/ngày, Telegram khẩn cấp tự dừng container nặng) và tích hợp Antigravity `/automation` (qua Remote Control), `/schedule`, `hooks.json`.

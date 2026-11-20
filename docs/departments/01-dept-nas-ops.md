@@ -2,16 +2,18 @@
 
 ## 1. Hồ sơ Phần cứng & Ràng buộc Triển khai
 - **Thiết bị:** Morefine N6 — Intel N200 (4 cores, 6W TDP), 16GB RAM.
-- **Lưu trữ:** 256GB SSD (OS/Docker — **giới hạn ghi tối đa**) + 20TB HDD gắn ngoài qua **dock USB Acasis**.
+- **Lưu trữ thực tế:**
+  - `nvme0n1`: WD PC SN740 256GB NVMe SSD (`/` — OS & `/DATA/AppData/*`, **giới hạn ghi tối đa**).
+  - `sda1`: **WD Gold 10TB** (`/mnt/disk1`) & `sdb1`: **WD Purple Pro 10TB** (`/mnt/disk2`) gắn qua **dock USB Acasis 2-bay** (tổng ~20TB, giám sát nhiệt độ & SMART riêng từng ổ!).
 - **Hệ điều hành & Quản trị:** Debian + **CasaOS** (**100% dịch vụ đóng gói Docker quản lý qua CasaOS**).
 - **Kênh cảnh báo tức thời:** Telegram Bot tích hợp trong container `homenas-watchdog` (0 token LLM).
 
 ## 2. Container `homenas-watchdog` (0-Token Deterministic Engine)
 
 Đóng gói thành 1 container Docker nhẹ (~25MB RAM) trong stack CasaOS, tách thành 4 module Python nhỏ:
-- `sensors.py`: Đọc nhiệt độ CPU (`/sys/class/thermal`), Load Avg (`/proc/loadavg`), RAM/Disk, và nhiệt độ HDD qua `smartctl -n standby -d sat` (bỏ qua nếu HDD đang ngủ `standby`).
+- `sensors.py`: Đọc nhiệt độ CPU (`/sys/class/thermal`), Load Avg (`/proc/loadavg`), RAM/Disk, và nhiệt độ **riêng từng ổ `sda` & `sdb`** qua `smartctl -n standby -d sat` (bỏ qua nếu ổ đang ngủ `standby`).
 - `policy.py`: Máy trạng thái (State Machine) đánh giá ngưỡng nhiệt độ + thời lượng duy trì + điều kiện kép.
-- `emergency.py`: Thực thi dừng khẩn cấp **chỉ trên danh sách `STOPPABLE_CONTAINERS`** (qua biến môi trường `.env`), tuyệt đối bảo vệ các container lõi (`casaos`, `kanboard`, `homenas-watchdog`, `agy-runtime`).
+- `emergency.py`: Thực thi dừng khẩn cấp **chỉ trên danh sách `STOPPABLE_CONTAINERS`** (VD: `qbittorrent`, `jellyfin`, `radarr`, `sonarr`, `bazarr`), **tuyệt đối bảo vệ** các container lõi (`adguard-home`, `portainer`, `casaos`, `kanboard`, `homenas-watchdog`, `antigravity-cli`).
 - `reporter.py`: Lưu mẫu trong **RAM (`tmpfs`)**, flush đúng **1 lần lúc 23:55** ra `logs/thermal/YYYY-MM-DD.json` (xoay vòng 30 ngày), gửi Telegram, và tổng hợp báo cáo tuần vào Chủ nhật 20:00.
 
 ## 3. Ma trận Chính sách Nhiệt độ, Overload & Xử lý Khẩn cấp
