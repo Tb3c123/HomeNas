@@ -2,6 +2,12 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.2.0] - 2026-11-20 *(Standalone Project Factory & 1-Tap Kickoff Prompts)*
+### Added
+- `shared/tools/project_loader/scaffold.py` & `tests/test_project_scaffold.py`: Bộ sinh dự án độc lập (tạo thư mục `/mnt/disk1/Workspace/<TenDuAn>`, Kanboard Project riêng 5 cột + 4 Swimlanes Dev, `project.yaml`, `AGENTS.md` đội 11 Micro-Agents, `memory/MEMORY.md`) và tự xuất **Prompt Khởi động copy 1 chạm**.
+### Changed
+- `skills/director/orchestrate-and-digest/SKILL.md` & `AGENTS.md`: Chỉ cần nhắn tự nhiên vào `Main` (*"Tạo dự án A..."*), `Main` tự dựng dự án mới & trả Prompt Khởi động; thu gọn `dept-dev` trong `HomeNas` về bảo trì lõi HomeNas.
+
 ## [v1.1.2] - 2026-11-20 *(Kanboard Human-Named Agent Users & --author Attribution)*
 ### Added
 - `shared/tools/kanboard_client/bootstrap.py`: Tự động tạo 5 tài khoản nhân sự AI trên Kanboard (`Alex (Director)`, `Marcus (NAS Ops)`, `Elena (Media)`, `Liam (Dev Lead)`, `Sentinel (Watchdog)`) và gán vào Project #1.

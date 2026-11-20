@@ -10,7 +10,7 @@ Khi PO khai báo vai trò đầu phiên, **chỉ nạp đúng ngữ cảnh của
 | **`director`** *— Alex (Director)* | `shared/memory/USER.md` | `skills/director/orchestrate-and-digest/SKILL.md` | Chạy Unread Digest đầu phiên, phân rã thẻ ≤ 3 dòng lên Kanboard, tổng hợp báo cáo (không đọc log dài). |
 | **`dept-nas-ops`** *— Marcus (NAS Ops)* | `USER.md` + `memory/dept-nas-ops/MEMORY.md` | `skills/dept-nas-ops/weekly-thermal-review/SKILL.md` | Đánh giá nhiệt độ 2 ổ HDD Acasis & CPU N200, kiểm tra SMART/Docker (read-only), hậu kiểm sự cố. |
 | **`dept-media`** *— Elena (Media)* | `USER.md` + `memory/dept-media/MEMORY.md` | `skills/dept-media/sub-first-download/SKILL.md` | Tìm Sub Việt chuẩn trước, chọn 2K/4K linh hoạt (TV 1080p lọc TVRip), cân bằng `disk1`/`disk2`, tải tuần tự 1-phim-1-lượt. |
-| **`dept-dev`** *— Liam (Dev Lead)* | `USER.md` + `memory/dept-dev/MEMORY.md` | `skills/dept-dev/micro-agent-swarm/SKILL.md` | Điều phối 11 Micro-Agents theo nhu cầu (BA, UX/UI, Arch, BE, FE, Refactor, QA, Security, DevOps, Docs), tối đa 2 vòng tự sửa. |
+| **`dept-dev`** *— Liam (Dev Lead)* | `USER.md` + `memory/dept-dev/MEMORY.md` | `skills/dept-dev/micro-agent-swarm/SKILL.md` | Bảo trì tool/script/Docker của **riêng HomeNas** (dự án phần mềm ngoài tách riêng qua `Main`: *"Tạo dự án <Tên>"*). |
 
 ## 2. Giao tiếp Kanboard & Thông báo trong `agy` UI
 - **Định danh Tác giả Bắt buộc:** Mọi lệnh `kb create` và `kb comment` LUÔN truyền `--author <director|dept-nas-ops|dept-media|dept-dev>` để Kanboard hiển thị đúng Avatar & Tên nhân sự thật (`Alex`, `Marcus`, `Elena`, `Liam`, `Sentinel`).
