@@ -74,6 +74,10 @@ class NasWatchdogCycle:
         if now.tm_wday == 6 and now.tm_hour == 20 and now.tm_min < 10 and self._last_weekly_label != week:
             md_path = self.reporter.generate_weekly_markdown(week_label=week)
             self.kb.create_task(f"[NAS] Weekly Thermal Review {week}", f"File: {md_path}", tags=["weekly-review"], dedup_key=f"weekly:{week}")
+            self.reporter.send_telegram(
+                f"📊 [NAS WEEKLY] Đã tổng hợp báo cáo tuần {week} ({md_path}).\n"
+                "Mở antigravity-cli và dán: Chạy weekly-thermal-review cho báo cáo tuần mới nhất."
+            )
             self._last_weekly_label = week
 
 
