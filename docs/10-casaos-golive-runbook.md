@@ -39,3 +39,15 @@ Trong `antigravity-cli` (hoặc Remote Control UI), đăng ký Automation chạy
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v -s tests
 PYTHONDONTWRITEBYTECODE=1 python3 shared/tools/guardrails/pre_tool_guard.py --audit-repo .
 ```
+
+## 6. Kích hoạt Chế độ "Safe-Turbo" trên `antigravity-cli` (Chạy mượt không cần canh)
+Áp dụng cấu hình `agentMode: "accept-edits"`, `toolPermission: "always-proceed"`, `artifactReviewPolicy: "always-proceed"` kèm danh sách `permissions.deny`/`ask` (gộp an toàn, không mất cấu hình cũ):
+```bash
+# Chạy bên trong container antigravity-cli:
+python3 /mnt/disk1/Workspace/HomeNas/platform/agy-config/apply_safe_turbo.py
+
+# Hoặc chạy trực tiếp trên host Debian:
+sudo python3 /mnt/disk1/Workspace/HomeNas/platform/agy-config/apply_safe_turbo.py \
+  /DATA/AppData/antigravity-cli/gemini/antigravity-cli/settings.json
+```
+Sau khi áp dụng, khởi chạy lại phiên `agy` (hoặc bấm `Shift+Tab` chuyển nhanh sang `accept-edits`), kiểm tra bằng `/config` và `/permissions`.

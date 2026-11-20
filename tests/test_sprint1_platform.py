@@ -106,6 +106,29 @@ class Sprint1PlatformTests(unittest.TestCase):
 
         self.assertEqual(audit_repository(pathlib.Path(".")), [])
 
+    def test_safe_turbo_config_and_lossless_merge(self) -> None:
+        import importlib.util
+        import json
+
+        script = pathlib.Path("platform/agy-config/apply_safe_turbo.py")
+        spec = importlib.util.spec_from_file_location("apply_safe_turbo", script)
+        mod = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
+        spec.loader.exec_module(mod)  # type: ignore[union-attr]
+
+        with tempfile.TemporaryDirectory(dir="/tmp") as tmp:
+            target = pathlib.Path(tmp) / "settings.json"
+            target.write_text(json.dumps({"colorScheme": "dark", "trustedWorkspaces": ["/other"]}), encoding="utf-8")
+            mod.apply_safe_turbo(target=target)
+            merged = json.loads(target.read_text(encoding="utf-8"))
+            self.assertEqual(merged["colorScheme"], "dark")
+            self.assertEqual(merged["agentMode"], "accept-edits")
+            self.assertEqual(merged["toolPermission"], "always-proceed")
+            self.assertEqual(merged["artifactReviewPolicy"], "always-proceed")
+            self.assertIn("/other", merged["trustedWorkspaces"])
+            self.assertIn("/mnt/disk1/Workspace/HomeNas", merged["trustedWorkspaces"])
+            self.assertIn("command(docker stop adguard-home*)", merged["permissions"]["deny"])
+            self.assertIn("command(rm -rf /*)", merged["permissions"]["deny"])
+
 
 if __name__ == "__main__":
     unittest.main()

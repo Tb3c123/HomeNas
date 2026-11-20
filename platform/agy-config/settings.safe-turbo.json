@@ -1,0 +1,28 @@
+{
+  "agentMode": "accept-edits",
+  "toolPermission": "always-proceed",
+  "artifactReviewPolicy": "always-proceed",
+  "trustedWorkspaces": [
+    "/mnt/disk1/Workspace/HomeNas"
+  ],
+  "permissions": {
+    "deny": [
+      "command(docker stop adguard-home*)",
+      "command(docker rm adguard-home*)",
+      "command(docker pause adguard-home*)",
+      "command(docker stop antigravity-cli*)",
+      "command(docker rm antigravity-cli*)",
+      "command(docker stop portainer*)",
+      "command(docker stop casaos*)",
+      "command(docker stop kanboard*)",
+      "command(rm -rf /*)",
+      "command(git push --force*)",
+      "command(git reset --hard*)"
+    ],
+    "ask": [
+      "command(docker compose up*)",
+      "command(docker compose down*)",
+      "command(docker system prune*)"
+    ]
+  }
+}
