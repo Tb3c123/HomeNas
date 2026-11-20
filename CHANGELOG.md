@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v0.3.4] - 2026-11-19
+### Added
+- `docs/departments/03-dept-dev.md`: Thiết kế chuyên sâu Phòng 3 (`dept-dev`) với đội hình đầy đủ 11 Micro-Agents (PM, BA, UX/UI, Architect, BE, FE, Refactor, QA, Security, DevOps, Docs/Skill Curator), giao thức tự trao đổi nội bộ (tối đa 2 vòng lặp) & liên phòng ban qua Kanboard, luật trần cứng ≤ 150 dòng toàn dự án (chống lách luật) và kho Agent Skills tải lẻ trực tiếp.
+
 ## [v0.3.3] - 2026-11-19
 ### Added
 - `docs/departments/02-dept-media.md`: Thiết kế chuyên sâu Phòng 2 (`dept-media`) theo cấu trúc thực tế — Mirror 1:1 trên `disk1`/`disk2` (loại bỏ `4K_UHD`), cân bằng dung lượng tự động, dồn trọn Season phim bộ về 1 ổ, ưu tiên Sub Việt + 2K/4K linh hoạt (phim bộ 1080p hạn chế TVRip), tải tuần tự 1-phim-1-lượt, canh 20–30% ETA viết mới 100%.
