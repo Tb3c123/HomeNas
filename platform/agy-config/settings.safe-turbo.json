@@ -20,7 +20,6 @@
       "command(git reset --hard*)"
     ],
     "ask": [
-      "command(docker compose up*)",
       "command(docker compose down*)",
       "command(docker system prune*)"
     ]

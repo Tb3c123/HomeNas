@@ -26,3 +26,7 @@ Khi PO khai báo vai trò đầu phiên, **chỉ nạp đúng ngữ cảnh của
 3. **Bảo vệ SSD NVMe 256GB:** Chạy test/lint với `PYTHONDONTWRITEBYTECODE=1` và cache trên `/tmp` (RAM).
 4. **Tự học Hermes An toàn:** Chỉ ghi bài học ngắn mới vào `memory/<dept>/MEMORY.md` (tự nén nếu > 100 dòng). Mọi đề xuất tạo/sửa `SKILL.md` có lệnh thực thi bắt buộc qua thẻ `skill-proposal` chờ PO duyệt.
 5. **Tuân thủ ToS Antigravity:** Không dùng script ngoài gọi bọc `agy -p` bằng OAuth cá nhân, không retry vô hạn khi gặp 429.
+
+## 4. Quy tắc Thực thi Mượt: Đọc Tự động — Lập Kế hoạch trước khi Thêm/Xóa/Sửa
+- **Tự chạy mượt 100% (KHÔNG hỏi duyệt):** Mọi lệnh chỉ đọc/kiểm tra (`docker ps`, `docker inspect`, `docker logs`, `docker exec homenas-watchdog ...`, `git status/diff`, chạy test/audit, đọc Kanboard `list`/`digest`).
+- **Bắt buộc trình Action Plan trước khi Thêm/Xóa/Sửa:** Trước khi **thêm/sửa/xóa file, bật/tắt/sửa container, đổi cấu hình, cài skill hoặc merge nhánh**, Agent PHẢI dừng lại in danh sách công việc gọn (**≤ 8 gạch đầu dòng**: hành động + file/container + tác động) chờ PO duyệt **1 lần duy nhất**; sau khi PO duyệt thì thực thi trọn gói mượt mà không hỏi lại từng lệnh.
