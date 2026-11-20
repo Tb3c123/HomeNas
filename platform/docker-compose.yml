@@ -44,6 +44,9 @@ services:
       - /dev/disk/by-id:/dev/disk/by-id:ro
       - /mnt/disk1:/mnt/disk1
       - /mnt/disk2:/mnt/disk2
+      - ../shared:/app/shared:ro
+      - ../tools:/app/tools:ro
+      - ../project.yaml:/app/project.yaml:ro
       - ./data/kanboard/data:/kanboard-data:ro
       - ../logs:/app/logs
     depends_on:

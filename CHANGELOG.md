@@ -2,6 +2,12 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.2.1] - 2026-11-20 *(Zero-Host-SSH Docker Compose & Instant 1s Watchdog Reload)*
+### Added
+- `platform/compose.sh`: Wrapper tự động chạy `docker compose` (fallback qua `docker:cli`) ngay từ `antigravity-cli`, không bao giờ bắt PO tự mở host SSH.
+### Changed
+- `platform/docker-compose.yml` & `AGENTS.md`: Bind-mount trực tiếp `../shared`, `../tools`, `../project.yaml` vào `homenas-watchdog` — từ nay cập nhật code chỉ cần `git pull && docker restart homenas-watchdog` (1 giây, 0 rebuild, 0 ghi rác SSD).
+
 ## [v1.2.0] - 2026-11-20 *(Standalone Project Factory & 1-Tap Kickoff Prompts)*
 ### Added
 - `shared/tools/project_loader/scaffold.py` & `tests/test_project_scaffold.py`: Bộ sinh dự án độc lập (tạo thư mục `/mnt/disk1/Workspace/<TenDuAn>`, Kanboard Project riêng 5 cột + 4 Swimlanes Dev, `project.yaml`, `AGENTS.md` đội 11 Micro-Agents, `memory/MEMORY.md`) và tự xuất **Prompt Khởi động copy 1 chạm**.
