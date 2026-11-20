@@ -2,6 +2,12 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.0.0-sprint2] - 2026-11-19 *(Sprint 2: NAS Watchdog & Thermal Protection)*
+### Added
+- `platform/Dockerfile.watchdog`: Image nhẹ cho container `homenas-watchdog`.
+- `tools/nas_ops/` (`sensors.py`, `policy.py`, `emergency.py`, `reporter.py`, `backup_kanboard.py`, `inspector_cli.py`): Bộ cảm biến SMART tôn trọng `standby`, State Machine nhiệt độ/overload, dừng khẩn cấp bảo vệ `adguard-home`, lưu mẫu RAM flush 1 lần lúc 23:55, tổng hợp tuần Chủ nhật và backup nóng SQLite Kanboard.
+- `tests/test_sprint2_nas_watchdog.py`: Bộ unit test Sprint 2 chạy trên RAM `/tmp`.
+
 ## [v1.0.0-sprint1] - 2026-11-19 *(Sprint 1: Shared Platform & Guardrails)*
 ### Added
 - `platform/docker-compose.yml`, `platform/.env.example`, `project.yaml`, `.gitignore`: Hạ tầng Shared Platform cho CasaOS và cấu hình Multi-Project.
