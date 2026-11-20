@@ -2,6 +2,13 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.0.0-sprint1] - 2026-11-19 *(Sprint 1: Shared Platform & Guardrails)*
+### Added
+- `platform/docker-compose.yml`, `platform/.env.example`, `project.yaml`, `.gitignore`: Hạ tầng Shared Platform cho CasaOS và cấu hình Multi-Project.
+- `shared/tools/kanboard_client/` (`rpc_client.py`, `formatter.py`, `digest_state.py`, `service.py`, `cli.py`): Bộ công cụ JSON-RPC 2.0 với hàng đợi offline RAM (`/tmp`), chống trùng thẻ (`dedup_key`), Unread Digest và Inline Receipt.
+- `shared/tools/guardrails/pre_tool_guard.py` & `platform/hooks/hooks.json`: Chốt chặn 0-token bảo vệ container lõi (`adguard-home`...) và kiểm tra cứng trần ≤ 150 dòng/file toàn dự án.
+- `tests/test_sprint1_platform.py`: Bộ unit test Sprint 1 chạy trên RAM `/tmp`.
+
 ## [v1.0.0-design-complete] - 2026-11-19 *(Phase 4 Design Complete)*
 ### Added
 - `docs/09-dev-handoff-and-roadmap.md`: Checklist Pre-Flight và lộ trình thực thi 5 Sprint kèm tiêu chí nghiệm thu (DoD).

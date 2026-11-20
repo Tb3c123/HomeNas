@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 shared/tools/guardrails/pre_tool_guard.py"
+          }
+        ]
+      }
+    ]
+  }
+}

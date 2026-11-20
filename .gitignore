@@ -1,0 +1,15 @@
+# Secrets & Environment
+.env
+*.env.local
+
+# Runtime Data & State
+data/
+logs/
+.state/
+/tmp/
+
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
