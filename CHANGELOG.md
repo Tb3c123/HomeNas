@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.0.9] - 2026-11-19 *(4-Frame Sidebar Workflow & Auto Handoff Prompts)*
+### Added
+- `skills/director/orchestrate-and-digest/SKILL.md` & `AGENTS.md`: Chuẩn hóa quy trình **Lựa chọn B (4 khung sidebar `Main`, `Dept-NasOps`, `Dept-Media`, `Dept-Dev`)** — mỗi khi `Main` tạo thẻ Kanboard sẽ tự động sinh sẵn **Handoff Prompt copy 1 chạm** kèm chỉ dẫn rõ dán vào khung phòng ban nào.
+
 ## [v1.0.8] - 2026-11-19 *(Read-Smooth & Plan-Before-Mutate Gate)*
 ### Changed
 - `AGENTS.md`: Bổ sung Mục 4 quy chuẩn **Đọc mượt 100% — Trình Action Plan 1 lần trước khi Thêm/Xóa/Sửa**.

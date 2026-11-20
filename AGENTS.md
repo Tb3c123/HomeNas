@@ -13,7 +13,8 @@ Khi PO khai báo vai trò đầu phiên, **chỉ nạp đúng ngữ cảnh của
 | **`dept-dev`** | `USER.md` + `memory/dept-dev/MEMORY.md` | `skills/dept-dev/micro-agent-swarm/SKILL.md` | Điều phối 11 Micro-Agents theo nhu cầu (BA, UX/UI, Arch, BE, FE, Refactor, QA, Security, DevOps, Docs), tối đa 2 vòng tự sửa. |
 
 ## 2. Giao tiếp Kanboard & Thông báo trong `agy` UI
-- **Đầu phiên `director`:** Chạy `docker exec homenas-watchdog python3 -m shared.tools.kanboard_client.cli digest --unread`. Nếu rỗng chỉ in `[ℹ️ IDLE] Không có thông báo/task mới.`.
+- **Đầu phiên `director` (`Main`):** Chạy `docker exec homenas-watchdog python3 -m shared.tools.kanboard_client.cli digest --unread`. Nếu rỗng chỉ in `[ℹ️ IDLE] Không có thông báo/task mới.`.
+- **Sau khi `director` tạo Task mới:** LUÔN xuất kèm **Handoff Prompt copy 1 chạm** ghi rõ khung sidebar đích (`Dept-NasOps`, `Dept-Media`, hoặc `Dept-Dev`) và số thẻ `#<id>` theo mẫu trong `skills/director/orchestrate-and-digest/SKILL.md`.
 - **Cuối mỗi tác vụ Sub-Chat (Fire-and-Forget):** Ghi Comment ≤ 5 dòng lên Kanboard và luôn in **Inline Compact Receipt (1–2 dòng)** ngay trong `agy` UI:
   - `[✅ DONE | #<id> | <dept>] <Tóm tắt 1 dòng>`
   - `[⚠️ REVIEW | #<id> | <dept>] <Lý do cần PO duyệt> (tag: needs-approval)`
