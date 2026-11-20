@@ -87,8 +87,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--daemon", action="store_true", help="Run continuous 3-minute 0-token watchdog loop")
     args = parser.parse_args(argv)
     if args.daemon:
+        import threading
+        from tools.nas_ops.tg_commands import TelegramCommandHandler
+
         cycle = NasWatchdogCycle()
-        print("[homenas-watchdog] Started 3-minute 0-token thermal & backup daemon.", flush=True)
+        tg_handler = TelegramCommandHandler(kb_service=cycle.kb)
+        threading.Thread(target=tg_handler.run_forever, name="tg-commands", daemon=True).start()
+        print("[homenas-watchdog] Started 3m thermal daemon + 4-command Telegram listener.", flush=True)
         while True:
             try:
                 cycle.run_once(elapsed_min=3.0)

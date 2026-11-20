@@ -51,3 +51,11 @@ sudo python3 /mnt/disk1/Workspace/HomeNas/platform/agy-config/apply_safe_turbo.p
   /DATA/AppData/antigravity-cli/gemini/antigravity-cli/settings.json
 ```
 Sau khi áp dụng, khởi chạy lại phiên `agy` (hoặc bấm `Shift+Tab` chuyển nhanh sang `accept-edits`), kiểm tra bằng `/config` và `/permissions`.
+
+## 7. Dọn Menu Telegram & Giữ Kết nối `agy remote-control` (`home-nas`)
+- Khi `homenas-watchdog` khởi động, nó tự gọi `deleteMyCommands` + `setMyCommands` xóa sạch lệnh thừa cũ, chỉ giữ đúng 4 lệnh: `/status`, `/reconnect`, `/digest`, `/help` (khóa cứng `TELEGRAM_CHAT_ID`).
+- Chạy vòng lặp giữ kết nối `remote_keeper.sh` trong container `antigravity-cli` (an toàn, giữ `EXEC: 0`):
+```bash
+chmod +x /mnt/disk1/Workspace/HomeNas/platform/agy-config/remote_keeper.sh
+nohup /mnt/disk1/Workspace/HomeNas/platform/agy-config/remote_keeper.sh > /tmp/remote_keeper.log 2>&1 &
+```
