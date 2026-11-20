@@ -23,5 +23,14 @@ Hệ thống điều phối và tự động hóa quản trị Home NAS (**Moref
 | | [`docs/departments/03-dept-dev.md`](docs/departments/03-dept-dev.md) | Phòng 3: 11 Micro-Agents, luật ≤ 150 dòng & kho Skill tải lẻ |
 | | [`docs/08-edge-cases-and-guardrails.md`](docs/08-edge-cases-and-guardrails.md) | Edge Cases, Empty/Loading States & Quota/ToS Guardrails |
 | **Phase 4** | [`docs/09-dev-handoff-and-roadmap.md`](docs/09-dev-handoff-and-roadmap.md) | Checklist chuẩn bị, lộ trình 5 Sprint & Tiêu chí nghiệm thu |
+| **Go-Live** | [`docs/10-casaos-golive-runbook.md`](docs/10-casaos-golive-runbook.md) | Hướng dẫn triển khai thực tế trên CasaOS, `/automation` & Multi-Project |
+
+## Cấu trúc Mã nguồn & Công cụ (`v1.0.0`)
+- `platform/`: `docker-compose.yml` (`kanboard`, `docker-proxy`, `homenas-watchdog`), `Dockerfile.watchdog`, `.env.example`, `hooks/hooks.json`.
+- `shared/tools/kanboard_client/`: Adapter JSON-RPC 2.0, hàng đợi offline RAM `/tmp`, chống trùng thẻ (`dedup_key`), Unread Digest & Inline Receipt.
+- `shared/tools/guardrails/pre_tool_guard.py`: Chốt chặn 0-token bảo vệ container lõi (`adguard-home`...) và trần cứng **≤ 150 dòng/file** toàn dự án.
+- `shared/tools/memory_manager/` & `skill_curator/`: Tự nén `MEMORY.md` (≤ 100 dòng), chốt chặn `skill-proposal` và tải lẻ trực tiếp `SKILL.md`.
+- `tools/nas_ops/`: Cảm biến SMART tôn trọng `standby`, State Machine nhiệt độ/overload, lưu mẫu RAM flush 1 lần lúc 23:55, tổng hợp tuần Chủ nhật & backup SQLite.
+- `tools/media_ops/`: Mirror 1:1 `disk1`/`disk2` (bỏ `4K_UHD`), cân bằng dung lượng, Sub-First 2K/4K linh hoạt (TV 1080p lọc TVRip), hàng đợi tải tuần tự 1-phim-1-lượt & canh 25% ETA.
 
 Xem lịch sử phiên bản đầy đủ tại [`CHANGELOG.md`](CHANGELOG.md).

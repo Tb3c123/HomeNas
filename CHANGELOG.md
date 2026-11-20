@@ -2,6 +2,12 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.0.0] - 2026-11-19 *(Sprint 5 Complete — Production Ready Release)*
+### Added
+- `shared/tools/project_loader/loader.py`: Bộ nạp cấu hình `project.yaml` đa dự án (0 external dependencies) và kiểm tra quyền hạn tool theo phòng ban.
+- `docs/10-casaos-golive-runbook.md`: Sổ tay triển khai Go-Live trên CasaOS, cấu hình `/automation` qua Remote Control và cắm thêm dự án mới.
+- `tests/test_sprint5_e2e_dryrun.py`: Kiểm thử diễn tập End-to-End cả 4 kịch bản thực tế (Nhiệt độ HDD 65°C + Media Thermal Wait + Recovery; Sub-First Sequential Download + Auto-Fallback; Multi-Project Plug-in #2; Hook 0-token chặn > 150 dòng & bảo vệ `adguard-home`).
+
 ## [v1.0.0-sprint4] - 2026-11-19 *(Sprint 4: Hermes 3-Tier Memory, Direct-Fetch Skills & 11 Micro-Agents)*
 ### Added
 - `shared/memory/USER.md`, `memory/*/MEMORY.md`: Khởi tạo bộ nhớ Hermes Tầng 1 và Tầng 2 cho cả 3 phòng ban.
