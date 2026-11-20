@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v0.3.5] - 2026-11-19 *(Phase 3 Complete — tag `v0.3.5-phase3`)*
+### Added
+- `docs/08-edge-cases-and-guardrails.md`: Hoàn thiện xử lý trạng thái rỗng/đang tải, chịu lỗi phần cứng Morefine N6/Acasis (offline 100%, `/dev/disk/by-id/`), chống hủy nhầm torrent khi HDD nóng và chốt chặn Quota/ToS/Line-Cap.
+
 ## [v0.3.4] - 2026-11-19
 ### Added
 - `docs/departments/03-dept-dev.md`: Thiết kế chuyên sâu Phòng 3 (`dept-dev`) với đội hình đầy đủ 11 Micro-Agents (PM, BA, UX/UI, Architect, BE, FE, Refactor, QA, Security, DevOps, Docs/Skill Curator), giao thức tự trao đổi nội bộ (tối đa 2 vòng lặp) & liên phòng ban qua Kanboard, luật trần cứng ≤ 150 dòng toàn dự án (chống lách luật) và kho Agent Skills tải lẻ trực tiếp.
