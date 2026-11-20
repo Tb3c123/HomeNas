@@ -2,6 +2,13 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.0.0-sprint4] - 2026-11-19 *(Sprint 4: Hermes 3-Tier Memory, Direct-Fetch Skills & 11 Micro-Agents)*
+### Added
+- `shared/memory/USER.md`, `memory/*/MEMORY.md`: Khởi tạo bộ nhớ Hermes Tầng 1 và Tầng 2 cho cả 3 phòng ban.
+- `shared/tools/memory_manager/compactor.py`: Cơ chế tự nén bộ nhớ ≤ 100 dòng và chốt chặn Memory Poisoning Guard (`skill-proposal` chờ PO duyệt).
+- `shared/tools/skill_curator/fetcher.py` & `skills/*/*/SKILL.md`: Công cụ tải lẻ trực tiếp `SKILL.md` (không cài npm/CLI thừa), kiểm toán bảo mật và bộ Skill chuẩn cho `director`, `dept-nas-ops`, `dept-media`, `dept-dev` (11 Micro-Agents).
+- `tests/test_sprint4_memory_and_skills.py`: Bộ unit test Sprint 4 chạy trên RAM `/tmp`.
+
 ## [v1.0.0-sprint3] - 2026-11-19 *(Sprint 3: Media Engine & Dual-Disk Mirror)*
 ### Added
 - `tools/media_ops/` (`disk_balancer.py`, `sub_first_matcher.py`, `media_watcher.py`, `inspector_cli.py`): Chuẩn hóa Mirror 1:1 `disk1`/`disk2` (loại bỏ `4K_UHD`), cân bằng dung lượng cho Movies, dồn trọn Season phim bộ về 1 ổ, khớp Sub Việt chuẩn + ưu tiên 2K/4K linh hoạt (phim bộ 1080p lọc bỏ TVRip), hàng đợi tải tuần tự 1-phim-1-lượt và canh 25% ETA có kiểm tra chéo `thermal_paused`.
