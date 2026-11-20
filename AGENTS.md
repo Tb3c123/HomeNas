@@ -15,11 +15,13 @@ Khi PO khai báo vai trò đầu phiên, **chỉ nạp đúng ngữ cảnh của
 ## 2. Giao tiếp Kanboard & Thông báo trong `agy` UI
 - **Đầu phiên `director` (`Main`):** Chạy `docker exec homenas-watchdog python3 -m shared.tools.kanboard_client.cli digest --unread`. Nếu rỗng chỉ in `[ℹ️ IDLE] Không có thông báo/task mới.`.
 - **Sau khi `director` tạo Task mới:** LUÔN xuất kèm **Handoff Prompt copy 1 chạm** ghi rõ khung sidebar đích (`Dept-NasOps`, `Dept-Media`, hoặc `Dept-Dev`) và số thẻ `#<id>` theo mẫu trong `skills/director/orchestrate-and-digest/SKILL.md`.
-- **Cuối mỗi tác vụ Sub-Chat (Fire-and-Forget):** Ghi Comment ≤ 5 dòng lên Kanboard và luôn in **Inline Compact Receipt (1–2 dòng)** ngay trong `agy` UI:
-  - `[✅ DONE | #<id> | <dept>] <Tóm tắt 1 dòng>`
-  - `[⚠️ REVIEW | #<id> | <dept>] <Lý do cần PO duyệt> (tag: needs-approval)`
-  - `[❌ BLOCKED | #<id> | <dept>] <Lỗi ngắn> (tag: blocked)`
-  - `[⏳ QUEUED | #<id> | <dept>] <Đã giao Watchdog theo dõi, đóng phiên ngay>`
+- **Cuối mỗi tác vụ Sub-Chat (`Dept-NasOps`, `Dept-Media`, `Dept-Dev`):** Ghi Comment ≤ 5 dòng lên Kanboard, in **Inline Compact Receipt (1–2 dòng)** và **LUÔN xuất kèm 1 dòng Return Prompt copy 1 chạm** để PO dán ngược về `Main`:
+  - Receipt: `[✅ DONE | #<id> | <dept>]` / `[⚠️ REVIEW | #<id> | <dept>]` / `[❌ BLOCKED | #<id> | <dept>]` / `[⏳ QUEUED | #<id> | <dept>]`
+  - Return Prompt chuẩn:
+    ```text
+    📤 Dán lại vào khung [Main]:
+    Báo cáo <dept> | #<id> | <DONE/REVIEW/BLOCKED/QUEUED> | <Tóm tắt 1 dòng>. Hãy cập nhật trạng thái và điều phối bước tiếp theo.
+    ```
 
 ## 3. Ràng buộc Cứng Bắt buộc (Hard Guardrails)
 1. **Bảo vệ Container lõi:** TUYỆT ĐỐI KHÔNG `stop`/`pause`/`rm` các container `adguard-home`, `portainer`, `casaos`, `kanboard`, `homenas-watchdog`, `antigravity-cli`.

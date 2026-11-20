@@ -22,5 +22,11 @@ Ngay sau khi tạo xong mỗi thẻ trên Kanboard, **LUÔN in sẵn khối Hand
 
 ```text
 📌 Dán vào khung [<Dept-NasOps | Dept-Media | Dept-Dev>] — Task #<id>:
-Vai trò: <dept-nas-ops | dept-media | dept-dev>. Nhận và xử lý thẻ #<id> trên Kanboard theo đúng AGENTS.md (đọc mượt không hỏi lặt vặt; nếu có thêm/xóa/sửa hãy trình Action Plan ≤ 8 dòng chờ tôi duyệt 1 lần; xong việc ghi Comment ≤ 5 dòng lên Kanboard và in Inline Receipt).
+Vai trò: <dept-nas-ops | dept-media | dept-dev>. Nhận và xử lý thẻ #<id> trên Kanboard theo đúng AGENTS.md (đọc mượt không hỏi lặt vặt; nếu có thêm/xóa/sửa hãy trình Action Plan ≤ 8 dòng chờ tôi duyệt 1 lần; xong việc ghi Comment ≤ 5 dòng lên Kanboard, in Inline Receipt và xuất Return Prompt dán về Main).
 ```
+
+## 4. Nhận Return Prompt từ Sub-Chat
+Khi PO dán dòng `Báo cáo <dept> | #<id> | <STATUS> | <Tóm tắt>` vào `Main`:
+- Chạy nhanh `digest --unread` để đồng bộ trạng thái Kanboard.
+- Nếu `DONE` → xác nhận gọn 1 dòng & đề xuất task tiếp theo (nếu có).
+- Nếu `REVIEW` / `BLOCKED` → tóm tắt ngắn điểm cần PO quyết định và chờ PO duyệt rồi xuất Handoff Prompt bước kế tiếp.

@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.1.1] - 2026-11-19 *(2-Way Copy-Ready Return Prompts: Sub-Chats → Main)*
+### Added
+- `AGENTS.md` & `skills/director/orchestrate-and-digest/SKILL.md`: Bổ sung mẫu **Return Prompt copy 1 chạm (`📤 Dán lại vào khung [Main]`)** bắt buộc ở cuối mỗi phiên Sub-Chat, hoàn thiện vòng giao tiếp 2 chiều siêu nhanh giữa 4 khung sidebar.
+
 ## [v1.1.0] - 2026-11-19 *(Clean 4-Command Telegram Bot & Remote Control /reconnect)*
 ### Added
 - `tools/nas_ops/tg_commands.py`: Tự động xóa lệnh thừa cũ (`deleteMyCommands` + `setMyCommands`) chỉ giữ đúng 4 lệnh `/status`, `/reconnect`, `/digest`, `/help`, khóa cứng `TELEGRAM_CHAT_ID`.
