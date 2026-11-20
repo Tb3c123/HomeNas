@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.0.5] - 2026-11-19 *(Multi-Session AGENTS.md)*
+### Added
+- `AGENTS.md`: Tệp định hướng chuẩn cho `antigravity-cli` (37 dòng) giúp 4 phiên chat (`director`, `dept-nas-ops`, `dept-media`, `dept-dev`) tự động nạp đúng bộ nhớ/Skill, in Inline Receipt và tuân thủ toàn bộ chốt chặn bảo vệ/trần 150 dòng.
+
 ## [v1.0.4] - 2026-11-19 *(Weekly Telegram Reminder — ToS-Safe Option 1)*
 ### Added
 - `tools/nas_ops/inspector_cli.py`: Tự động bắn tin nhắn Telegram lúc 20:00 Chủ nhật kèm sẵn câu lệnh prompt copy 1 chạm cho `antigravity-cli` (tuân thủ 100% ToS, không dùng daemon ngoài tự gọi `agy -p`).
