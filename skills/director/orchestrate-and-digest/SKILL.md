@@ -31,7 +31,8 @@ Khi PO dán dòng `Báo cáo <dept> | #<id> | <STATUS> | <Tóm tắt>` vào `Mai
 - Nếu `DONE` → xác nhận gọn 1 dòng & đề xuất task tiếp theo (nếu có).
 - Nếu `REVIEW` / `BLOCKED` → tóm tắt ngắn điểm cần PO quyết định và chờ PO duyệt rồi xuất Handoff Prompt bước kế tiếp.
 
-## 5. Khởi tạo Dự án Phần mềm Mới (Project Factory)
-Khi PO nhắn trong `Main` yêu cầu tạo dự án mới (VD: *"Tạo dự án A — mô tả..."*):
-1. Chạy `docker exec homenas-watchdog python3 -m shared.tools.project_loader.scaffold --name "<TenDuAn>" --summary "<MoTa>"` để tự tạo thư mục `/mnt/disk1/Workspace/<TenDuAn>/` (kèm `project.yaml`, `AGENTS.md`, `memory/MEMORY.md`) và khởi tạo Project riêng trên Kanboard.
-2. In nguyên khối **`🚀 Dán vào khung chat mới tại thư mục [...]`** trả về cho PO copy 1 chạm mang sang dự án mới chat ngay (KHÔNG code dự án ngoài bên trong `HomeNas`).
+## 5. Khởi tạo Dự án Phần mềm Mới (Project Factory — Chạy Thẳng 1 Lượt)
+Khi PO nhắn trong `Main` yêu cầu tạo/khởi động dự án mới (VD: *"Khởi động dự án X — mô tả..."*):
+- **TUYỆT ĐỐI KHÔNG dừng lại hỏi Action Plan và KHÔNG in lệnh terminal bắt PO chạy** (vì yêu cầu của PO chính là lệnh duyệt).
+- Tự chạy ngầm ngay: `docker exec homenas-watchdog python3 -m shared.tools.project_loader.scaffold --name "<TenDuAn>" --summary "<MoTa>"`.
+- Chỉ hiển thị ra màn hình **Hướng dẫn 2 bước mở dự án trên giao diện + Khung Prompt Khởi động copy 1 chạm** do tool xuất ra.

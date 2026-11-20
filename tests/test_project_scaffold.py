@@ -53,7 +53,7 @@ class ProjectScaffoldTests(unittest.TestCase):
             self.assertEqual(manifest["kanboard_project_id"], 2)
             self.assertEqual(manifest["max_lines_per_file"], 150)
 
-            self.assertIn("🚀 Dán vào khung chat mới", res["kickoff_prompt"])
+            self.assertIn("Hướng dẫn 2 bước bắt đầu", res["kickoff_prompt"])
             self.assertIn("Kanboard Project #2", res["kickoff_prompt"])
             self.assertIn("Web bán hàng cá nhân", res["kickoff_prompt"])
             self.assertEqual(audit_repository(proj_dir), [])

@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.2.2] - 2026-11-20 *(Instant 1-Turn Project Factory & Clean UI Guide + Kickoff Prompt)*
+### Changed
+- `AGENTS.md`, `skills/director/orchestrate-and-digest/SKILL.md` & `shared/tools/project_loader/scaffold.py`: Khi PO yêu cầu khởi động/tạo dự án mới hoặc giao task trong `Main`, `Main` tự thực thi ngầm ngay trong 1 lượt (không dừng hỏi Action Plan, không in lệnh terminal) và chỉ xuất **Hướng dẫn 2 bước trên giao diện + Khung Prompt Khởi động copy 1 chạm**.
+
 ## [v1.2.1] - 2026-11-20 *(Zero-Host-SSH Docker Compose & Instant 1s Watchdog Reload)*
 ### Added
 - `platform/compose.sh`: Wrapper tự động chạy `docker compose` (fallback qua `docker:cli`) ngay từ `antigravity-cli`, không bao giờ bắt PO tự mở host SSH.

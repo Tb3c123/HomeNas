@@ -31,7 +31,8 @@ Khi PO khai báo vai trò đầu phiên, **chỉ nạp đúng ngữ cảnh của
 4. **Tự học Hermes An toàn:** Chỉ ghi bài học ngắn mới vào `memory/<dept>/MEMORY.md` (tự nén nếu > 100 dòng). Mọi đề xuất tạo/sửa `SKILL.md` có lệnh thực thi bắt buộc qua thẻ `skill-proposal` chờ PO duyệt.
 5. **Tuân thủ ToS Antigravity:** Không dùng script ngoài gọi bọc `agy -p` bằng OAuth cá nhân, không retry vô hạn khi gặp 429.
 
-## 4. Quy tắc Thực thi Mượt: Đọc Tự động — Lập Kế hoạch trước khi Thêm/Xóa/Sửa
-- **Tự chạy mượt 100% (KHÔNG hỏi duyệt):** Mọi lệnh chỉ đọc/kiểm tra (`docker ps`, `docker inspect`, `docker logs`, `docker exec homenas-watchdog ...`, `git status/diff`, chạy test/audit, đọc Kanboard `list`/`digest`).
-- **Bắt buộc trình Action Plan trước khi Thêm/Xóa/Sửa:** Trước khi **thêm/sửa/xóa file, bật/tắt/sửa container, đổi cấu hình, cài skill hoặc merge nhánh**, Agent PHẢI dừng lại in danh sách công việc gọn (**≤ 8 gạch đầu dòng**: hành động + file/container + tác động) chờ PO duyệt **1 lần duy nhất**; sau khi PO duyệt thì thực thi trọn gói mượt mà không hỏi lại từng lệnh.
-- **Không đẩy việc SSH cho PO:** Cập nhật code `HomeNas` chỉ cần `git pull && docker restart homenas-watchdog` (vì `shared/` & `tools/` đã bind-mount trực tiếp); nếu cần chạy `docker compose` thì tự dùng `./platform/compose.sh ...` (tự fallback qua `docker:cli`).
+## 4. Quy tắc Thực thi Mượt: Đọc & Điều phối Tự động — Lập Kế hoạch trước khi Thêm/Xóa/Sửa Hệ thống
+- **Tự chạy mượt 100% trong 1 lượt (KHÔNG dừng hỏi Action Plan, KHÔNG in lệnh shell bắt PO chạy):**
+  1. Mọi lệnh chỉ đọc/kiểm tra (`docker ps/inspect/logs`, `docker exec homenas-watchdog ...`, `git status/diff`, chạy test/audit, đọc Kanboard `list`/`digest`).
+  2. Mọi thao tác điều phối của `Main` (`director`) khi PO đã yêu cầu trực tiếp: **tạo/di chuyển/comment thẻ Kanboard** và **khởi tạo khung dự án mới (`scaffold.py`)** → tự chạy ngầm ngay và chỉ trả về **Hướng dẫn thao tác trên UI + Khung Prompt copy 1 chạm**.
+- **Bắt buộc trình Action Plan trước khi Thêm/Xóa/Sửa Hệ thống:** Trước khi **sửa/xóa code dự án, bật/tắt/sửa container, đổi cấu hình, cài skill hoặc merge nhánh**, Agent PHẢI dừng lại in danh sách công việc gọn (**≤ 8 gạch đầu dòng**) chờ PO duyệt **1 lần duy nhất**; sau khi PO duyệt thì tự thực thi trọn gói (dùng `docker restart homenas-watchdog` hoặc `./platform/compose.sh`, tuyệt đối không đẩy lệnh bash bắt PO tự chạy).

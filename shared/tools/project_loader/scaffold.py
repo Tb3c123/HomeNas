@@ -51,12 +51,15 @@ def _create_kanboard_dev_project(kb: KanboardClient, project_name: str) -> int:
 def build_kickoff_prompt(project_name: str, project_dir: pathlib.Path, kb_project_id: int, summary: str) -> str:
     goal = summary.strip() or f"xây dựng sản phẩm {project_name}"
     return (
-        f"🚀 Dán vào khung chat mới tại thư mục [{project_dir}]:\n"
-        f"Khởi động dự án {project_name} (Kanboard Project #{kb_project_id}). "
-        f"Bạn là Đội ngũ Sản phẩm 11 Micro-Agents (đọc AGENTS.md, kế thừa USER.md, "
-        f"trần ≤150 dòng/file qua pre_tool_guard.py và bộ skills tại /mnt/disk1/Workspace/HomeNas/skills/dept-dev/). "
-        f"Hãy chào tôi và bắt đầu Phase 1 - Bước 1.1 (làm từng bước nhỏ, trình Action Plan trước khi thêm/xóa/sửa) "
-        f"cho mục tiêu: {goal}."
+        f"✅ Đã khởi tạo xong không gian dự án **{project_name}** (Kanboard Project `#{kb_project_id}`).\n\n"
+        f"### 🧭 Hướng dẫn 2 bước bắt đầu (Không cần chạy lệnh):\n"
+        f"1. Trên giao diện Antigravity, bấm **New Chat / Open Folder** và chọn thư mục: `{project_dir}`\n"
+        f"2. Bấm nút **Copy** ở góc phải khung dưới đây, dán vào khung chat mới đó và gửi:\n\n"
+        f"```text\n"
+        f"Chào đội ngũ! Hãy khởi động dự án {project_name} (Kanboard Project #{kb_project_id}) với vai trò Đội ngũ Thiết kế & Phát triển Sản phẩm 11 Micro-Agents theo đúng tệp AGENTS.md trong thư mục này.\n"
+        f"Mục tiêu sản phẩm của tôi: {goal}.\n"
+        f"Hãy xác nhận đã nạp AGENTS.md, USER.md cùng bộ skills, và đặt câu hỏi đầu tiên ở Phase 1 - Bước 1.1 để chúng ta bắt đầu thiết kế từng bước.\n"
+        f"```"
     )
 
 
