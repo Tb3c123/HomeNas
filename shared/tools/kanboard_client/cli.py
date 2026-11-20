@@ -19,12 +19,15 @@ def build_parser() -> argparse.ArgumentParser:
     p_create = sub.add_parser("create")
     p_create.add_argument("--title", required=True)
     p_create.add_argument("--desc", default="")
+    p_create.add_argument("--swimlane", default=None)
+    p_create.add_argument("--col", default=None)
     p_create.add_argument("--tags", default="")
     p_create.add_argument("--dedup-key", default=None)
 
     p_move = sub.add_parser("move")
     p_move.add_argument("task_id", type=int)
-    p_move.add_argument("--col-id", type=int, required=True)
+    p_move.add_argument("--col-id", type=int, default=None)
+    p_move.add_argument("--col", default=None)
 
     p_comment = sub.add_parser("comment")
     p_comment.add_argument("task_id", type=int)
@@ -42,9 +45,18 @@ def main(argv: list[str] | None = None) -> int:
         print(svc.list_tasks(swimlane=args.swimlane, column=args.col))
     elif args.cmd == "create":
         tags = [t.strip() for t in args.tags.split(",") if t.strip()]
-        print(svc.create_task(args.title, args.desc, tags=tags, dedup_key=args.dedup_key))
+        print(
+            svc.create_task(
+                args.title,
+                args.desc,
+                swimlane=args.swimlane,
+                column=args.col,
+                tags=tags,
+                dedup_key=args.dedup_key,
+            )
+        )
     elif args.cmd == "move":
-        print(svc.move_task(args.task_id, args.col_id))
+        print(svc.move_task(args.task_id, column_id=args.col_id, column=args.col))
     elif args.cmd == "comment":
         print(svc.comment_task(args.task_id, args.text))
     elif args.cmd == "digest":

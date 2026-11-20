@@ -22,6 +22,7 @@ def bootstrap_homenas_board(client: KanboardClient | None = None, project_name: 
     projects = kb.call("getAllProjects") or []
     proj = next((p for p in projects if p["name"] == project_name), None)
     pid = int(proj["id"]) if proj else int(kb.call("createProject", {"name": project_name}))
+    kb.call("addProjectUser", {"project_id": pid, "user_id": 1, "role": "project-manager"})
 
     cols = kb.call("getColumns", {"project_id": pid}) or []
     by_title = {c["title"]: int(c["id"]) for c in cols}

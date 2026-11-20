@@ -2,6 +2,11 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.0.7] - 2026-11-19 *(Kanboard Real-API Compatibility Hotfix)*
+### Fixed
+- `shared/tools/kanboard_client/bootstrap.py`: Tự động gán `admin` (`user_id=1`) làm `project-manager` cho Project #1 để bảng `HomeNas Operations` hiển thị ngay trên Dashboard Kanboard (`:8085`).
+- `shared/tools/kanboard_client/service.py` & `cli.py`: Ánh xạ `column_id`/`swimlane_id` sang tên cột & Swimlane khi gọi `getAllTasks` thực tế, và bổ sung cờ `--swimlane`/`--col` cho lệnh `create`/`move`.
+
 ## [v1.0.6] - 2026-11-19 *(Safe-Turbo CLI Configuration)*
 ### Added
 - `platform/agy-config/settings.safe-turbo.json` & `apply_safe_turbo.py`: Chế độ "Safe-Turbo" (`agentMode: accept-edits`, `toolPermission: always-proceed`, `artifactReviewPolicy: always-proceed`) kèm `permissions.deny`/`ask` bảo vệ container lõi (`adguard-home`, `antigravity-cli`...) và công cụ gộp JSON không làm mất cấu hình cũ.

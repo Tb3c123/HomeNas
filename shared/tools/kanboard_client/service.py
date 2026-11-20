@@ -4,10 +4,7 @@ import os
 from typing import Any
 
 from shared.tools.kanboard_client.digest_state import DigestStateStore
-from shared.tools.kanboard_client.formatter import (
-    find_open_dedup_task,
-    format_task_list,
-)
+from shared.tools.kanboard_client.formatter import find_open_dedup_task, format_task_list
 from shared.tools.kanboard_client.rpc_client import KanboardClient, KanboardRPCError
 
 
@@ -22,11 +19,32 @@ class KanboardService:
         self.digest_store = digest_store or DigestStateStore()
         self.project_id = project_id or int(os.environ.get("KANBOARD_PROJECT_ID", "1"))
 
+    def _board_maps(self) -> tuple[dict[str, int], dict[int, str], dict[str, int], dict[int, str]]:
+        try:
+            cols = self.client.call("getColumns", {"project_id": self.project_id}) or []
+            lanes = self.client.call("getAllSwimlanes", {"project_id": self.project_id}) or []
+        except KanboardRPCError:
+            return {}, {}, {}, {}
+        col_by_name = {str(c["title"]): int(c["id"]) for c in cols if "title" in c}
+        col_by_id = {int(c["id"]): str(c["title"]) for c in cols if "title" in c}
+        lane_by_name = {str(l["name"]): int(l["id"]) for l in lanes if "name" in l}
+        lane_by_id = {int(l["id"]): str(l["name"]) for l in lanes if "name" in l}
+        return col_by_name, col_by_id, lane_by_name, lane_by_id
+
+    def _enrich_tasks(self, tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        _, col_by_id, _, lane_by_id = self._board_maps()
+        for t in tasks:
+            if not t.get("column_name") and t.get("column_id") is not None:
+                t["column_name"] = col_by_id.get(int(t["column_id"]), str(t["column_id"]))
+            if not t.get("swimlane_name") and t.get("swimlane_id") is not None:
+                t["swimlane_name"] = lane_by_id.get(int(t["swimlane_id"]), str(t["swimlane_id"]))
+        return tasks
+
     def list_tasks(self, swimlane: str | None = None, column: str | None = None) -> str:
         self.client.flush_offline_queue()
-        tasks: list[dict[str, Any]] = self.client.call(
-            "getAllTasks", {"project_id": self.project_id, "status_id": 1}
-        ) or []
+        tasks: list[dict[str, Any]] = self._enrich_tasks(
+            self.client.call("getAllTasks", {"project_id": self.project_id, "status_id": 1}) or []
+        )
         if swimlane:
             tasks = [t for t in tasks if t.get("swimlane_name") == swimlane]
         if column:
@@ -39,14 +57,22 @@ class KanboardService:
         description: str = "",
         swimlane_id: int | None = None,
         column_id: int | None = None,
+        swimlane: str | None = None,
+        column: str | None = None,
         tags: list[str] | None = None,
         dedup_key: str | None = None,
     ) -> str:
+        col_by_name, _, lane_by_name, _ = self._board_maps()
+        if column and not column_id:
+            column_id = col_by_name.get(column)
+        if swimlane and not swimlane_id:
+            swimlane_id = lane_by_name.get(swimlane)
+
         if dedup_key:
             try:
-                tasks = self.client.call(
-                    "getAllTasks", {"project_id": self.project_id, "status_id": 1}
-                ) or []
+                tasks = self._enrich_tasks(
+                    self.client.call("getAllTasks", {"project_id": self.project_id, "status_id": 1}) or []
+                )
             except KanboardRPCError:
                 tasks = []
             existing = find_open_dedup_task(tasks, dedup_key)
@@ -56,11 +82,7 @@ class KanboardService:
                 return f"DEDUP_UPDATED #{tid} [{dedup_key}]"
             title = f"{title} [DEDUP:{dedup_key}]"
 
-        params: dict[str, Any] = {
-            "project_id": self.project_id,
-            "title": title,
-            "description": description,
-        }
+        params: dict[str, Any] = {"project_id": self.project_id, "title": title, "description": description}
         if swimlane_id:
             params["swimlane_id"] = swimlane_id
         if column_id:
@@ -74,25 +96,28 @@ class KanboardService:
             self.client.queue_offline_action("createTask", params)
             return f"QUEUED_OFFLINE createTask: {title}"
 
-    def move_task(self, task_id: int, column_id: int, swimlane_id: int = 1) -> str:
+    def move_task(
+        self, task_id: int, column_id: int | None = None, swimlane_id: int = 1, column: str | None = None
+    ) -> str:
+        col_by_name, _, _, _ = self._board_maps()
+        resolved_col = column_id or (col_by_name.get(column) if column else None) or 1
         params = {
             "project_id": self.project_id,
             "task_id": task_id,
-            "column_id": column_id,
+            "column_id": resolved_col,
             "position": 1,
             "swimlane_id": swimlane_id,
         }
         try:
             self.client.call("moveTaskPosition", params)
-            return f"MOVED #{task_id} -> col:{column_id}"
+            return f"MOVED #{task_id} -> col:{column or resolved_col}"
         except KanboardRPCError:
             self.client.queue_offline_action("moveTaskPosition", params)
             return f"QUEUED_OFFLINE moveTaskPosition #{task_id}"
 
     def comment_task(self, task_id: int, text: str, user_id: int = 1) -> str:
         lines = text.strip().splitlines()[:5]
-        compact = "\n".join(lines)
-        params = {"task_id": task_id, "user_id": user_id, "content": compact}
+        params = {"task_id": task_id, "user_id": user_id, "content": "\n".join(lines)}
         try:
             self.client.call("createComment", params)
             return f"COMMENTED #{task_id} ({len(lines)} lines)"
@@ -101,8 +126,8 @@ class KanboardService:
             return f"QUEUED_OFFLINE createComment #{task_id}"
 
     def unread_digest(self) -> str:
-        tasks = self.client.call(
-            "getAllTasks", {"project_id": self.project_id, "status_id": 1}
-        ) or []
+        tasks = self._enrich_tasks(
+            self.client.call("getAllTasks", {"project_id": self.project_id, "status_id": 1}) or []
+        )
         unread = self.digest_store.filter_unread_tasks(self.project_id, tasks)
         return format_task_list(unread)
