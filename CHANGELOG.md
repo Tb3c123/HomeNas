@@ -2,6 +2,11 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.0.0-design-complete] - 2026-11-19 *(Phase 4 Design Complete)*
+### Added
+- `docs/09-dev-handoff-and-roadmap.md`: Checklist Pre-Flight và lộ trình thực thi 5 Sprint kèm tiêu chí nghiệm thu (DoD).
+- `README.md`: Tổng mục lục điều hướng toàn bộ kiến trúc và tài liệu dự án HomeNas.
+
 ## [v0.3.5] - 2026-11-19 *(Phase 3 Complete — tag `v0.3.5-phase3`)*
 ### Added
 - `docs/08-edge-cases-and-guardrails.md`: Hoàn thiện xử lý trạng thái rỗng/đang tải, chịu lỗi phần cứng Morefine N6/Acasis (offline 100%, `/dev/disk/by-id/`), chống hủy nhầm torrent khi HDD nóng và chốt chặn Quota/ToS/Line-Cap.
