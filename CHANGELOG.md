@@ -2,6 +2,11 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.0.0-sprint3] - 2026-11-19 *(Sprint 3: Media Engine & Dual-Disk Mirror)*
+### Added
+- `tools/media_ops/` (`disk_balancer.py`, `sub_first_matcher.py`, `media_watcher.py`, `inspector_cli.py`): Chuẩn hóa Mirror 1:1 `disk1`/`disk2` (loại bỏ `4K_UHD`), cân bằng dung lượng cho Movies, dồn trọn Season phim bộ về 1 ổ, khớp Sub Việt chuẩn + ưu tiên 2K/4K linh hoạt (phim bộ 1080p lọc bỏ TVRip), hàng đợi tải tuần tự 1-phim-1-lượt và canh 25% ETA có kiểm tra chéo `thermal_paused`.
+- `tests/test_sprint3_media_engine.py`: Bộ unit test Sprint 3 chạy trên RAM `/tmp`.
+
 ## [v1.0.0-sprint2] - 2026-11-19 *(Sprint 2: NAS Watchdog & Thermal Protection)*
 ### Added
 - `platform/Dockerfile.watchdog`: Image nhẹ cho container `homenas-watchdog`.
