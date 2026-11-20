@@ -101,6 +101,7 @@ def scaffold_project(
         f"- **Kanboard:** Project `#{kb_pid}` (`docker exec homenas-watchdog python3 -m shared.tools.kanboard_client.cli --project-id {kb_pid} ... --author dept-dev`).\n"
         f"- **Kế thừa Shared Platform:** Đọc `/mnt/disk1/Workspace/HomeNas/shared/memory/USER.md`, `./memory/MEMORY.md`, và nạp Lazy Load skills tại `/mnt/disk1/Workspace/HomeNas/skills/dept-dev/`.\n"
         f"- **Đội hình 11 Micro-Agents:** `dev-pm-lead`, `dev-ba`, `dev-ux-ui`, `dev-architect`, `dev-backend`, `dev-frontend`, `dev-refactor`, `dev-qa-tester`, `dev-security-reviewer`, `dev-devops`, `dev-docs-curator` (tối đa 2 vòng tự sửa `MAX_RETRY_LOOPS=2`).\n"
+        f"- **Tự học Hermes Minh bạch:** Khi rút ra bài học mới, gọi `python3 /mnt/disk1/Workspace/HomeNas/shared/tools/memory_manager/cli.py add --dept {slug.lower()} --fact \"...\"` và in dòng `💾 Memory [{slug.lower()}] ➕ ...` ra khung chat.\n"
         f"- **Quy tắc cứng:** Mọi file ≤ 150 dòng (kiểm tra bằng `python3 /mnt/disk1/Workspace/HomeNas/shared/tools/guardrails/pre_tool_guard.py --audit-repo .`); cache test trên `/tmp`; đọc tự động mượt — trình Action Plan ≤ 8 dòng chờ PO duyệt 1 lần trước khi thêm/xóa/sửa.\n",
         encoding="utf-8",
     )

@@ -28,7 +28,7 @@ Khi PO khai báo vai trò đầu phiên, **chỉ nạp đúng ngữ cảnh của
 1. **Bảo vệ Container lõi:** TUYỆT ĐỐI KHÔNG `stop`/`pause`/`rm` các container `adguard-home`, `portainer`, `casaos`, `kanboard`, `homenas-watchdog`, `antigravity-cli`.
 2. **Trần cứng Toàn Dự Án:** Mọi file (code, docs, test, script, CSS) đều **≤ 150 dòng** (trừ lockfile cài đặt), chống lách luật nén dòng `;`. Kiểm tra bằng `PYTHONDONTWRITEBYTECODE=1 python3 shared/tools/guardrails/pre_tool_guard.py --audit-repo .`.
 3. **Bảo vệ SSD NVMe 256GB:** Chạy test/lint với `PYTHONDONTWRITEBYTECODE=1` và cache trên `/tmp` (RAM).
-4. **Tự học Hermes An toàn:** Chỉ ghi bài học ngắn mới vào `memory/<dept>/MEMORY.md` (tự nén nếu > 100 dòng). Mọi đề xuất tạo/sửa `SKILL.md` có lệnh thực thi bắt buộc qua thẻ `skill-proposal` chờ PO duyệt.
+4. **Tự học Hermes Minh bạch (Verified Learning Toast):** Khi phát hiện bài học/workaround mới, Agent BẮT BUỘC gọi CLI `python3 -m shared.tools.memory_manager.cli <add|patch|remove> --dept <dept> ...` (tự lưu lịch sử nén/xóa vào `memory/ARCHIVE.jsonl`) và **in nguyên dòng badge `💾 Memory [<dept>] ➕/✏️ ...` ngay dưới Inline Receipt** để PO thấy rõ AI vừa học được gì (cấm "nói miệng là đã nhớ" mà không gọi CLI). Mọi đề xuất tạo/sửa `SKILL.md` bắt buộc qua `propose-skill` (`💾 Skill ... 📦 Proposed`).
 5. **Tuân thủ ToS Antigravity:** Không dùng script ngoài gọi bọc `agy -p` bằng OAuth cá nhân, không retry vô hạn khi gặp 429.
 
 ## 4. Quy tắc Thực thi Mượt: Đọc & Điều phối Tự động — Lập Kế hoạch trước khi Thêm/Xóa/Sửa Hệ thống

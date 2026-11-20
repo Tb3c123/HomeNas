@@ -70,7 +70,11 @@ class TelegramCommandHandler:
             return "🔄 Đã gửi yêu cầu khởi động lại `agy remote-control start --name home-nas`. Chờ 5–10 giây..."
         if cmd == "/digest":
             try:
-                return f"📋 Kanboard Unread Digest:\n{self.kb.unread_digest()}"
+                from shared.tools.memory_manager.compactor import read_recent_learning_toasts
+
+                feed = read_recent_learning_toasts(self.state_dir / "learning_feed.jsonl", limit=3)
+                learn_block = ("\n\n🧠 Bài học mới ghi nhớ:\n" + "\n".join(feed)) if feed else ""
+                return f"📋 Kanboard Unread Digest:\n{self.kb.unread_digest()}{learn_block}"
             except Exception as exc:
                 return f"⚠️ Không đọc được Kanboard: {exc}"
         if cmd == "/help":
