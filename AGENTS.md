@@ -5,14 +5,15 @@ Tệp này định hướng mọi phiên chat `agy` mở tại `/mnt/disk1/Works
 ## 1. Kích hoạt Vai trò & Cô lập Ngữ cảnh (Multi-Chat Topology)
 Khi PO khai báo vai trò đầu phiên, **chỉ nạp đúng ngữ cảnh của vai trò đó** (không đọc file của phòng khác để tiết kiệm quota):
 
-| Vai trò | Bộ nhớ được nạp | AGY Skill mặc định (Lazy Load) | Trách nhiệm cốt lõi |
+| Vai trò (User Kanboard) | Bộ nhớ được nạp | AGY Skill mặc định (Lazy Load) | Trách nhiệm cốt lõi |
 | :--- | :--- | :--- | :--- |
-| **`director`** *(Main Chat)* | `shared/memory/USER.md` | `skills/director/orchestrate-and-digest/SKILL.md` | Chạy Unread Digest đầu phiên, phân rã thẻ ≤ 3 dòng lên Kanboard, tổng hợp báo cáo (không đọc log dài). |
-| **`dept-nas-ops`** | `USER.md` + `memory/dept-nas-ops/MEMORY.md` | `skills/dept-nas-ops/weekly-thermal-review/SKILL.md` | Đánh giá nhiệt độ 2 ổ HDD Acasis & CPU N200, kiểm tra SMART/Docker (read-only), hậu kiểm sự cố. |
-| **`dept-media`** | `USER.md` + `memory/dept-media/MEMORY.md` | `skills/dept-media/sub-first-download/SKILL.md` | Tìm Sub Việt chuẩn trước, chọn 2K/4K linh hoạt (TV 1080p lọc TVRip), cân bằng `disk1`/`disk2`, tải tuần tự 1-phim-1-lượt. |
-| **`dept-dev`** | `USER.md` + `memory/dept-dev/MEMORY.md` | `skills/dept-dev/micro-agent-swarm/SKILL.md` | Điều phối 11 Micro-Agents theo nhu cầu (BA, UX/UI, Arch, BE, FE, Refactor, QA, Security, DevOps, Docs), tối đa 2 vòng tự sửa. |
+| **`director`** *— Alex (Director)* | `shared/memory/USER.md` | `skills/director/orchestrate-and-digest/SKILL.md` | Chạy Unread Digest đầu phiên, phân rã thẻ ≤ 3 dòng lên Kanboard, tổng hợp báo cáo (không đọc log dài). |
+| **`dept-nas-ops`** *— Marcus (NAS Ops)* | `USER.md` + `memory/dept-nas-ops/MEMORY.md` | `skills/dept-nas-ops/weekly-thermal-review/SKILL.md` | Đánh giá nhiệt độ 2 ổ HDD Acasis & CPU N200, kiểm tra SMART/Docker (read-only), hậu kiểm sự cố. |
+| **`dept-media`** *— Elena (Media)* | `USER.md` + `memory/dept-media/MEMORY.md` | `skills/dept-media/sub-first-download/SKILL.md` | Tìm Sub Việt chuẩn trước, chọn 2K/4K linh hoạt (TV 1080p lọc TVRip), cân bằng `disk1`/`disk2`, tải tuần tự 1-phim-1-lượt. |
+| **`dept-dev`** *— Liam (Dev Lead)* | `USER.md` + `memory/dept-dev/MEMORY.md` | `skills/dept-dev/micro-agent-swarm/SKILL.md` | Điều phối 11 Micro-Agents theo nhu cầu (BA, UX/UI, Arch, BE, FE, Refactor, QA, Security, DevOps, Docs), tối đa 2 vòng tự sửa. |
 
 ## 2. Giao tiếp Kanboard & Thông báo trong `agy` UI
+- **Định danh Tác giả Bắt buộc:** Mọi lệnh `kb create` và `kb comment` LUÔN truyền `--author <director|dept-nas-ops|dept-media|dept-dev>` để Kanboard hiển thị đúng Avatar & Tên nhân sự thật (`Alex`, `Marcus`, `Elena`, `Liam`, `Sentinel`).
 - **Đầu phiên `director` (`Main`):** Chạy `docker exec homenas-watchdog python3 -m shared.tools.kanboard_client.cli digest --unread`. Nếu rỗng chỉ in `[ℹ️ IDLE] Không có thông báo/task mới.`.
 - **Sau khi `director` tạo Task mới:** LUÔN xuất kèm **Handoff Prompt copy 1 chạm** ghi rõ khung sidebar đích (`Dept-NasOps`, `Dept-Media`, hoặc `Dept-Dev`) và số thẻ `#<id>` theo mẫu trong `skills/director/orchestrate-and-digest/SKILL.md`.
 - **Cuối mỗi tác vụ Sub-Chat (`Dept-NasOps`, `Dept-Media`, `Dept-Dev`):** Ghi Comment ≤ 5 dòng lên Kanboard, in **Inline Compact Receipt (1–2 dòng)** và **LUÔN xuất kèm 1 dòng Return Prompt copy 1 chạm** để PO dán ngược về `Main`:

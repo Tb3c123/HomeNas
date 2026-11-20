@@ -23,6 +23,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_create.add_argument("--col", default=None)
     p_create.add_argument("--tags", default="")
     p_create.add_argument("--dedup-key", default=None)
+    p_create.add_argument("--author", default=None)
 
     p_move = sub.add_parser("move")
     p_move.add_argument("task_id", type=int)
@@ -32,6 +33,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_comment = sub.add_parser("comment")
     p_comment.add_argument("task_id", type=int)
     p_comment.add_argument("--text", required=True)
+    p_comment.add_argument("--author", default=None)
 
     p_digest = sub.add_parser("digest")
     p_digest.add_argument("--unread", action="store_true")
@@ -53,12 +55,13 @@ def main(argv: list[str] | None = None) -> int:
                 column=args.col,
                 tags=tags,
                 dedup_key=args.dedup_key,
+                author=args.author,
             )
         )
     elif args.cmd == "move":
         print(svc.move_task(args.task_id, column_id=args.col_id, column=args.col))
     elif args.cmd == "comment":
-        print(svc.comment_task(args.task_id, args.text))
+        print(svc.comment_task(args.task_id, args.text, author=args.author))
     elif args.cmd == "digest":
         print(svc.unread_digest())
     return 0

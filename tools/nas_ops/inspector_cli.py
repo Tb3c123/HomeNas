@@ -43,12 +43,12 @@ class NasWatchdogCycle:
         if level == "WARNING":
             msg = f"⚠️ [NAS WARNING] HDD:{verdict['max_hdd_c']}C CPU:{verdict['cpu_temp_c']}C | {reasons}"
             self.reporter.send_telegram(msg)
-            self.kb.create_task("[NAS] Thermal/Load Warning", msg, tags=["daily-alert"], dedup_key="nas:thermal")
+            self.kb.create_task("[NAS] Thermal/Load Warning", msg, tags=["daily-alert"], dedup_key="nas:thermal", author="watchdog")
         elif level == "EMERGENCY":
             paused = self.emergency.trigger_emergency_mitigation("pause")
             msg = f"🚨 [NAS EMERGENCY] {reasons} | Auto-paused: {','.join(paused) or 'none'}"
             self.reporter.send_telegram(msg)
-            self.kb.create_task("[NAS] EMERGENCY Thermal Mitigation", msg, tags=["emergency"], dedup_key="nas:emergency")
+            self.kb.create_task("[NAS] EMERGENCY Thermal Mitigation", msg, tags=["emergency"], dedup_key="nas:emergency", author="watchdog")
             verdict["mitigated_containers"] = paused
         elif level == "RECOVERY":
             msg = f"✅ [NAS RECOVERY] Cooled down (HDD:{verdict['max_hdd_c']}C). Ready for PO review to unpause."
@@ -73,7 +73,13 @@ class NasWatchdogCycle:
             self._last_backup_day = day
         if now.tm_wday == 6 and now.tm_hour == 20 and now.tm_min < 10 and self._last_weekly_label != week:
             md_path = self.reporter.generate_weekly_markdown(week_label=week)
-            self.kb.create_task(f"[NAS] Weekly Thermal Review {week}", f"File: {md_path}", tags=["weekly-review"], dedup_key=f"weekly:{week}")
+            self.kb.create_task(
+                f"[NAS] Weekly Thermal Review {week}",
+                f"File: {md_path}",
+                tags=["weekly-review"],
+                dedup_key=f"weekly:{week}",
+                author="watchdog",
+            )
             self.reporter.send_telegram(
                 f"📊 [NAS WEEKLY] Đã tổng hợp báo cáo tuần {week} ({md_path}).\n"
                 "Mở antigravity-cli và dán: Chạy weekly-thermal-review cho báo cáo tuần mới nhất."

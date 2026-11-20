@@ -47,6 +47,10 @@ class FakeKanboardClient(KanboardClient):
         if method == "createComment":
             self.comments.append(params)
             return len(self.comments)
+        if method == "getUserByName":
+            users = {"director": 2, "dept-nas-ops": 3, "dept-media": 4, "dept-dev": 5, "watchdog": 6}
+            uid = users.get(str(params.get("username", "")))
+            return {"id": uid, "username": params.get("username")} if uid else False
         if method == "moveTaskPosition":
             return True
         return None
@@ -63,12 +67,13 @@ class Sprint1PlatformTests(unittest.TestCase):
             self.assertEqual(svc.list_tasks(), IDLE_MESSAGE)
             self.assertEqual(svc.unread_digest(), IDLE_MESSAGE)
 
-            res1 = svc.create_task("[NAS] HDD 61C", "Temp warning", dedup_key="thermal:sda")
+            res1 = svc.create_task("[NAS] HDD 61C", "Temp warning", dedup_key="thermal:sda", author="watchdog")
             self.assertIn("CREATED #1", res1)
-            res2 = svc.create_task("[NAS] HDD 62C", "Still warm", dedup_key="thermal:sda")
+            res2 = svc.create_task("[NAS] HDD 62C", "Still warm", dedup_key="thermal:sda", author="dept-media")
             self.assertEqual(res2, "DEDUP_UPDATED #1 [thermal:sda]")
             self.assertEqual(len(client.tasks), 1)
-            self.assertEqual(len(client.comments), 1)
+            self.assertEqual(client.comments[0]["user_id"], 4)
+            self.assertTrue(client.comments[0]["content"].startswith("[dept-media]"))
 
             digest1 = svc.unread_digest()
             self.assertIn("#1 [Ready] [NAS Ops]", digest1)
