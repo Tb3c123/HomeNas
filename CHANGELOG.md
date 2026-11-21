@@ -2,6 +2,12 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.5.0] - 2026-11-21 *(Expanded 48-Skill Dev Library — 6 Full-Stack Engineering Domains)*
+### Added
+- `skills/dept-dev/` (+30 skill mới từ `rmyndharis/antigravity-skills` MIT, nâng tổng lên **48 skills** phủ kín 6 lĩnh vực: Kiến trúc/Hiệu năng, DB/Data, AI/LLM/Multi-Agent, 13 Ngôn ngữ & Mobile, QA/Debug/Security/Auth, DevOps/Git/K8s/Observability — mỗi file ≤ 60 dòng, `model: inherit`).
+### Changed
+- `skills/dept-dev/CATALOG.md`, `shared/tools/project_loader/scaffold.py` & `tests/test_dev_skills_pack.py`: Nâng cấp mục lục Lazy-Load 6 lĩnh vực (≤ 100 dòng) và kiểm chứng tự động đủ 48/48 skill.
+
 ## [v1.4.0] - 2026-11-21 *(Curated 18-Skill Dev Team Library — Mindset + Language Packs)*
 ### Added
 - `skills/dept-dev/` (17 skill mới tinh lọc từ `rmyndharis/antigravity-skills` MIT + `micro-agent-swarm` = **18 skills**, mỗi file ≤ 120 dòng, chuẩn `model: inherit`) & `skills/dept-dev/CATALOG.md` (mục lục Lazy-Load 2 tầng: 10 Tư duy Kỹ thuật + 8 Ngôn ngữ Python/TS/Web).
