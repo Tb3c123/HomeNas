@@ -2,6 +2,13 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.4.0] - 2026-11-21 *(Curated 18-Skill Dev Team Library — Mindset + Language Packs)*
+### Added
+- `skills/dept-dev/` (17 skill mới tinh lọc từ `rmyndharis/antigravity-skills` MIT + `micro-agent-swarm` = **18 skills**, mỗi file ≤ 120 dòng, chuẩn `model: inherit`) & `skills/dept-dev/CATALOG.md` (mục lục Lazy-Load 2 tầng: 10 Tư duy Kỹ thuật + 8 Ngôn ngữ Python/TS/Web).
+- `tests/test_dev_skills_pack.py`: Unit test xác thực đủ 18 skill, YAML frontmatter, trần ≤ 120 dòng và đồng bộ `CATALOG.md`.
+### Changed
+- `shared/tools/project_loader/scaffold.py`: `AGENTS.md` của mọi dự án mới tạo trỏ trực tiếp tới `skills/dept-dev/CATALOG.md`.
+
 ## [v1.3.0] - 2026-11-20 *(Hermes Verified Learning Toasts, Memory CLI & ARCHIVE.jsonl)*
 ### Added
 - `shared/tools/memory_manager/cli.py` & `compactor.py`: Chuẩn hóa theo `NousResearch/hermes-agent` (`add`, `patch`, `remove`, `list`, `propose-skill`), tự động lưu bài học bị nén/sửa/xóa vào `memory/ARCHIVE.jsonl` (chống mất tri thức), ghi `.state/learning_feed.jsonl` và xuất badge trực quan **`💾 Memory [<dept>] ➕/✏️/🗑️ ...`** & **`💾 Skill ... 📦 Proposed`**.
