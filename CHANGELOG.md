@@ -2,6 +2,11 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.5.2] - 2026-11-21 *(External Skill 1000-Line / 64KB Controlled Cap & 2-Step Security Audit Sync)*
+### Changed
+- `shared/tools/guardrails/pre_tool_guard.py`: Giữ cứng trần `<= 150 dòng` cho toàn bộ code/docs/test/skill nội bộ, đồng thời mở ngoại lệ có kiểm soát `<= 1000 dòng / 64 KB` cho `skills/**/SKILL.md` để tương thích với các skill nguồn ngoài đầy đủ nạp qua `HomeNas Manager (:8090)`.
+- `shared/tools/skill_curator/fetcher.py`, `shared/templates/DEV_TEAM_RULES.md` & `tests/test_sprint4_memory_and_skills.py`: Bỏ cơ chế tự cắt cụt ở dòng 150, bổ sung chế độ xem trước 2 bước (`dry_run=True`), cảnh báo (`>150 dòng`, `sudo`, `docker`, `curl`) và chặn cứng `/etc/shadow` & prompt injection.
+
 ## [v1.5.1] - 2026-11-21 *(Live-Linked Shared Dev Rules — 1-Update Sync Across All Projects)*
 ### Added
 - `shared/templates/DEV_TEAM_RULES.md`: Hiến pháp vận hành chung của đội 11 Micro-Agents, 48+ Skills Lazy Load, Hermes `💾 Memory` và Guardrails — sửa 1 chỗ tại `HomeNas`, mọi dự án con tự động đồng bộ 100%.

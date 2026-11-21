@@ -14,6 +14,8 @@ import re
 import sys
 
 MAX_LINES = 150
+MAX_SKILL_LINES = 1000
+MAX_SKILL_BYTES = 65536
 EXEMPT_NAMES = {
     "package-lock.json",
     "pnpm-lock.yaml",
@@ -39,6 +41,10 @@ FORBIDDEN_PATTERNS = [
 ]
 
 
+def _is_skill_markdown(path: pathlib.Path) -> bool:
+    return path.name == "SKILL.md" and "skills" in path.parts
+
+
 def check_command_safety(command_str: str) -> list[str]:
     errors: list[str] = []
     for pattern, msg in FORBIDDEN_PATTERNS:
@@ -60,8 +66,11 @@ def check_file_compliance(path: pathlib.Path) -> list[str]:
         return []
     lines = text.splitlines()
     errors: list[str] = []
-    if len(lines) > MAX_LINES:
-        errors.append(f"{path}: {len(lines)} lines exceeds cap of {MAX_LINES} lines.")
+    cap = MAX_SKILL_LINES if _is_skill_markdown(path) else MAX_LINES
+    if len(lines) > cap:
+        errors.append(f"{path}: {len(lines)} lines exceeds cap of {cap} lines.")
+    if _is_skill_markdown(path) and len(text.encode("utf-8")) > MAX_SKILL_BYTES:
+        errors.append(f"{path}: exceeds {MAX_SKILL_BYTES} bytes cap for SKILL.md.")
     code_exts = {".py", ".sh", ".js", ".ts", ".jsx", ".tsx", ".css"}
     if path.suffix in code_exts:
         for idx, line in enumerate(lines, start=1):
@@ -101,9 +110,11 @@ def main() -> int:
     errs = check_command_safety(cmd)
     content = payload.get("CodeContent") or payload.get("ReplacementContent")
     target = payload.get("TargetFile")
-    if isinstance(content, str) and (not target or pathlib.Path(target).name not in EXEMPT_NAMES):
-        if len(content.splitlines()) > MAX_LINES:
-            errs.append(f"Blocked write: content has {len(content.splitlines())} lines (> {MAX_LINES}).")
+    target_path = pathlib.Path(target) if target else None
+    if isinstance(content, str) and (not target_path or target_path.name not in EXEMPT_NAMES):
+        cap = MAX_SKILL_LINES if (target_path and _is_skill_markdown(target_path)) else MAX_LINES
+        if len(content.splitlines()) > cap:
+            errs.append(f"Blocked write: content has {len(content.splitlines())} lines (> {cap}).")
     if errs:
         print("\n".join(errs), file=sys.stderr)
         return 2

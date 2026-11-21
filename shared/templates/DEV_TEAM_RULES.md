@@ -13,7 +13,7 @@
 3. **Giao tiếp Liên-Agent:** Bàn giao qua Contract Files gọn (`<= 60 dòng`) và gói tin `STATUS | FILE | ACTION`. Tối đa **2 vòng tự sửa (`MAX_RETRY_LOOPS = 2`)** giữa Coder và QA/Reviewer; nếu vẫn lỗi thì gắn `blocked` trên Kanboard và báo PO.
 
 ## 3. Ràng buộc Cứng & Tự học Minh bạch (Hard Guardrails)
-1. **Trần cứng Toàn Dự Án:** Mọi file (`code`, `docs`, `test`, `script`, `CSS`) đều **`<= 150 dòng`** (cấm nén dòng bằng `;`). Kiểm tra bằng:
+1. **Trần cứng Toàn Dự Án:** Mọi file (`code`, `docs`, `test`, `script`, `CSS`, skill tự viết nội bộ) đều **`<= 150 dòng`** (cấm nén dòng bằng `;`). Riêng `skills/**/SKILL.md` nguồn ngoài nạp qua sàng lọc 2 bước (HomeNas Manager `:8090` / `fetcher.py`) được phép tối đa **`<= 1000 dòng / 64 KB`** (chặn cứng `curl|sh`, `rm -rf`, `git --force`, dừng 6 container lõi, `/etc/shadow`, prompt injection). Kiểm tra bằng:
    `PYTHONDONTWRITEBYTECODE=1 python3 /mnt/disk1/Workspace/HomeNas/shared/tools/guardrails/pre_tool_guard.py --audit-repo .`
 2. **Bảo vệ SSD NVMe:** Mọi lệnh test/build/cache đều đẩy vào `/tmp` (`PYTHONDONTWRITEBYTECODE=1`, `cache_dir=/tmp/.pytest_cache`).
 3. **Tự học Hermes Minh bạch (`💾 Memory`):** Khi phát hiện bài học/workaround mới, bắt buộc gọi CLI:
