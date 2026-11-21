@@ -2,6 +2,12 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.5.1] - 2026-11-21 *(Live-Linked Shared Dev Rules — 1-Update Sync Across All Projects)*
+### Added
+- `shared/templates/DEV_TEAM_RULES.md`: Hiến pháp vận hành chung của đội 11 Micro-Agents, 48+ Skills Lazy Load, Hermes `💾 Memory` và Guardrails — sửa 1 chỗ tại `HomeNas`, mọi dự án con tự động đồng bộ 100%.
+### Changed
+- `shared/tools/project_loader/scaffold.py` & `tests/test_project_scaffold.py`: `AGENTS.md` và `project.yaml` của các dự án mới chỉ lưu 4 dòng định danh riêng và Live-Link trực tiếp về `shared/templates/DEV_TEAM_RULES.md`.
+
 ## [v1.5.0] - 2026-11-21 *(Expanded 48-Skill Dev Library — 6 Full-Stack Engineering Domains)*
 ### Added
 - `skills/dept-dev/` (+30 skill mới từ `rmyndharis/antigravity-skills` MIT, nâng tổng lên **48 skills** phủ kín 6 lĩnh vực: Kiến trúc/Hiệu năng, DB/Data, AI/LLM/Multi-Agent, 13 Ngôn ngữ & Mobile, QA/Debug/Security/Auth, DevOps/Git/K8s/Observability — mỗi file ≤ 60 dòng, `model: inherit`).
@@ -102,36 +108,9 @@ Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orch
 - `tools/nas_ops/inspector_cli.py`: Bổ sung cờ `--daemon` cho vòng lặp giám sát 3 phút, flush 23:55, backup Kanboard 03:00 và tổng hợp tuần Chủ nhật 20:00.
 - `platform/docker-compose.yml`: Mount thêm `/dev/disk/by-id:/dev/disk/by-id:ro` cho container `homenas-watchdog` để chống đảo tên `sda`/`sdb` sau reboot.
 
-## [v1.0.0] - 2026-11-19 *(Sprint 5 Complete — Production Ready Release)*
+## [v1.0.0] - 2026-11-19 *(Sprint 1–5 Complete — Production Ready Release)*
 ### Added
-- `shared/tools/project_loader/loader.py`: Bộ nạp cấu hình `project.yaml` đa dự án (0 external dependencies) và kiểm tra quyền hạn tool theo phòng ban.
-- `docs/10-casaos-golive-runbook.md`: Sổ tay triển khai Go-Live trên CasaOS, cấu hình `/automation` qua Remote Control và cắm thêm dự án mới.
-- `tests/test_sprint5_e2e_dryrun.py`: Kiểm thử diễn tập End-to-End cả 4 kịch bản thực tế (Nhiệt độ HDD 65°C + Media Thermal Wait + Recovery; Sub-First Sequential Download + Auto-Fallback; Multi-Project Plug-in #2; Hook 0-token chặn > 150 dòng & bảo vệ `adguard-home`).
-
-## [v1.0.0-sprint4] - 2026-11-19 *(Sprint 4: Hermes 3-Tier Memory, Direct-Fetch Skills & 11 Micro-Agents)*
-### Added
-- `shared/memory/USER.md`, `memory/*/MEMORY.md`: Khởi tạo bộ nhớ Hermes Tầng 1 và Tầng 2 cho cả 3 phòng ban.
-- `shared/tools/memory_manager/compactor.py`: Cơ chế tự nén bộ nhớ ≤ 100 dòng và chốt chặn Memory Poisoning Guard (`skill-proposal` chờ PO duyệt).
-- `shared/tools/skill_curator/fetcher.py` & `skills/*/*/SKILL.md`: Công cụ tải lẻ trực tiếp `SKILL.md` (không cài npm/CLI thừa), kiểm toán bảo mật và bộ Skill chuẩn cho `director`, `dept-nas-ops`, `dept-media`, `dept-dev` (11 Micro-Agents).
-- `tests/test_sprint4_memory_and_skills.py`: Bộ unit test Sprint 4 chạy trên RAM `/tmp`.
-
-## [v1.0.0-sprint3] - 2026-11-19 *(Sprint 3: Media Engine & Dual-Disk Mirror)*
-### Added
-- `tools/media_ops/` (`disk_balancer.py`, `sub_first_matcher.py`, `media_watcher.py`, `inspector_cli.py`): Chuẩn hóa Mirror 1:1 `disk1`/`disk2` (loại bỏ `4K_UHD`), cân bằng dung lượng cho Movies, dồn trọn Season phim bộ về 1 ổ, khớp Sub Việt chuẩn + ưu tiên 2K/4K linh hoạt (phim bộ 1080p lọc bỏ TVRip), hàng đợi tải tuần tự 1-phim-1-lượt và canh 25% ETA có kiểm tra chéo `thermal_paused`.
-- `tests/test_sprint3_media_engine.py`: Bộ unit test Sprint 3 chạy trên RAM `/tmp`.
-
-## [v1.0.0-sprint2] - 2026-11-19 *(Sprint 2: NAS Watchdog & Thermal Protection)*
-### Added
-- `platform/Dockerfile.watchdog`: Image nhẹ cho container `homenas-watchdog`.
-- `tools/nas_ops/` (`sensors.py`, `policy.py`, `emergency.py`, `reporter.py`, `backup_kanboard.py`, `inspector_cli.py`): Bộ cảm biến SMART tôn trọng `standby`, State Machine nhiệt độ/overload, dừng khẩn cấp bảo vệ `adguard-home`, lưu mẫu RAM flush 1 lần lúc 23:55, tổng hợp tuần Chủ nhật và backup nóng SQLite Kanboard.
-- `tests/test_sprint2_nas_watchdog.py`: Bộ unit test Sprint 2 chạy trên RAM `/tmp`.
-
-## [v1.0.0-sprint1] - 2026-11-19 *(Sprint 1: Shared Platform & Guardrails)*
-### Added
-- `platform/docker-compose.yml`, `platform/.env.example`, `project.yaml`, `.gitignore`: Hạ tầng Shared Platform cho CasaOS và cấu hình Multi-Project.
-- `shared/tools/kanboard_client/` (`rpc_client.py`, `formatter.py`, `digest_state.py`, `service.py`, `cli.py`): Bộ công cụ JSON-RPC 2.0 với hàng đợi offline RAM (`/tmp`), chống trùng thẻ (`dedup_key`), Unread Digest và Inline Receipt.
-- `shared/tools/guardrails/pre_tool_guard.py` & `platform/hooks/hooks.json`: Chốt chặn 0-token bảo vệ container lõi (`adguard-home`...) và kiểm tra cứng trần ≤ 150 dòng/file toàn dự án.
-- `tests/test_sprint1_platform.py`: Bộ unit test Sprint 1 chạy trên RAM `/tmp`.
+- Toàn bộ hạ tầng Shared Platform (Sprint 1), NAS Watchdog & Bảo vệ nhiệt độ (Sprint 2), Media Sub-First & Dual-Disk Mirror (Sprint 3), Hermes 3-Tier Memory & 11 Micro-Agents (Sprint 4), Multi-Project Loader (`loader.py`), Runbook CasaOS (`docs/10-casaos-golive-runbook.md`) và E2E Dry-Run (`tests/test_sprint5_e2e_dryrun.py`).
 
 ---
 *Lịch sử thiết kế Phase 1–4 (`v0.1.0` → `v1.0.0-design-complete`) được lưu trữ tại [`docs/changelog-v0-design.md`](docs/changelog-v0-design.md) để đảm bảo trần ≤ 150 dòng/file.*

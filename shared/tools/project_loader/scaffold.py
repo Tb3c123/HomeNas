@@ -56,9 +56,9 @@ def build_kickoff_prompt(project_name: str, project_dir: pathlib.Path, kb_projec
         f"1. Trên giao diện Antigravity, bấm **New Chat / Open Folder** và chọn thư mục: `{project_dir}`\n"
         f"2. Bấm nút **Copy** ở góc phải khung dưới đây, dán vào khung chat mới đó và gửi:\n\n"
         f"```text\n"
-        f"Chào đội ngũ! Hãy khởi động dự án {project_name} (Kanboard Project #{kb_project_id}) với vai trò Đội ngũ Thiết kế & Phát triển Sản phẩm 11 Micro-Agents theo đúng tệp AGENTS.md trong thư mục này.\n"
+        f"Chào đội ngũ! Hãy khởi động dự án {project_name} (Kanboard Project #{kb_project_id}) theo tệp AGENTS.md trong thư mục này và tệp luật gốc /mnt/disk1/Workspace/HomeNas/shared/templates/DEV_TEAM_RULES.md.\n"
         f"Mục tiêu sản phẩm của tôi: {goal}.\n"
-        f"Hãy xác nhận đã nạp AGENTS.md, USER.md cùng bộ skills, và đặt câu hỏi đầu tiên ở Phase 1 - Bước 1.1 để chúng ta bắt đầu thiết kế từng bước.\n"
+        f"Hãy xác nhận đã nạp AGENTS.md, DEV_TEAM_RULES.md, USER.md cùng mục lục 48 skills tại CATALOG.md, và đặt câu hỏi đầu tiên ở Phase 1 - Bước 1.1 để chúng ta bắt đầu thiết kế từng bước.\n"
         f"```"
     )
 
@@ -84,6 +84,7 @@ def scaffold_project(
 
     (proj_dir / "project.yaml").write_text(
         f"project:\n  id: {slug.lower()}\n  name: \"{name}\"\n  kanboard_project_id: {kb_pid}\n"
+        f"  shared_rules: \"/mnt/disk1/Workspace/HomeNas/shared/templates/DEV_TEAM_RULES.md\"\n"
         f"  constraints:\n    max_lines_per_file: 150\n    max_retry_loops: 2\n"
         f"memory:\n  user_profile: \"/mnt/disk1/Workspace/HomeNas/shared/memory/USER.md\"\n"
         f"  project_memory: \"./memory/MEMORY.md\"\n"
@@ -97,12 +98,11 @@ def scaffold_project(
         encoding="utf-8",
     )
     (proj_dir / "AGENTS.md").write_text(
-        f"# {name} — Standalone 11 Micro-Agent Product Team (`AGENTS.md`)\n\n"
-        f"- **Kanboard:** Project `#{kb_pid}` (`docker exec homenas-watchdog python3 -m shared.tools.kanboard_client.cli --project-id {kb_pid} ... --author dept-dev`).\n"
-        f"- **Kế thừa Shared Platform:** Đọc `/mnt/disk1/Workspace/HomeNas/shared/memory/USER.md`, `./memory/MEMORY.md`, và tra mục lục Lazy Load 48 skills tại `/mnt/disk1/Workspace/HomeNas/skills/dept-dev/CATALOG.md`.\n"
-        f"- **Đội hình 11 Micro-Agents:** `dev-pm-lead`, `dev-ba`, `dev-ux-ui`, `dev-architect`, `dev-backend`, `dev-frontend`, `dev-refactor`, `dev-qa-tester`, `dev-security-reviewer`, `dev-devops`, `dev-docs-curator` (tối đa 2 vòng tự sửa `MAX_RETRY_LOOPS=2`).\n"
-        f"- **Tự học Hermes Minh bạch:** Khi rút ra bài học mới, gọi `python3 /mnt/disk1/Workspace/HomeNas/shared/tools/memory_manager/cli.py add --dept {slug.lower()} --fact \"...\"` và in dòng `💾 Memory [{slug.lower()}] ➕ ...` ra khung chat.\n"
-        f"- **Quy tắc cứng:** Mọi file ≤ 150 dòng (kiểm tra bằng `python3 /mnt/disk1/Workspace/HomeNas/shared/tools/guardrails/pre_tool_guard.py --audit-repo .`); cache test trên `/tmp`; đọc tự động mượt — trình Action Plan ≤ 8 dòng chờ PO duyệt 1 lần trước khi thêm/xóa/sửa.\n",
+        f"# {name} — Project Identity (`AGENTS.md`)\n\n"
+        f"> **BẮT BUỘC ĐẦU PHIÊN:** Đọc ngay tệp luật gốc `/mnt/disk1/Workspace/HomeNas/shared/templates/DEV_TEAM_RULES.md` để nạp quy trình 11 Micro-Agents, mục lục 48+ Skills (`CATALOG.md`) và toàn bộ Guardrails mới nhất từ `HomeNas`.\n\n"
+        f"- **Định danh Dự án:** `{slug.lower()}` (`{name}`) — Bộ nhớ riêng: `./memory/MEMORY.md`.\n"
+        f"- **Bảng Kanboard riêng:** Project `#{kb_pid}` (`docker exec homenas-watchdog python3 -m shared.tools.kanboard_client.cli --project-id {kb_pid} ... --author dept-dev`).\n"
+        f"- **Tự học Hermes (`💾 Memory`):** `python3 /mnt/disk1/Workspace/HomeNas/shared/tools/memory_manager/cli.py add --dept {slug.lower()} --fact \"...\"`.\n",
         encoding="utf-8",
     )
     prompt = build_kickoff_prompt(name, proj_dir, kb_pid, summary)

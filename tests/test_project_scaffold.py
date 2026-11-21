@@ -56,6 +56,8 @@ class ProjectScaffoldTests(unittest.TestCase):
             self.assertIn("Hướng dẫn 2 bước bắt đầu", res["kickoff_prompt"])
             self.assertIn("Kanboard Project #2", res["kickoff_prompt"])
             self.assertIn("Web bán hàng cá nhân", res["kickoff_prompt"])
+            self.assertIn("DEV_TEAM_RULES.md", (proj_dir / "AGENTS.md").read_text(encoding="utf-8"))
+            self.assertIn("DEV_TEAM_RULES.md", (proj_dir / "project.yaml").read_text(encoding="utf-8"))
             self.assertEqual(audit_repository(proj_dir), [])
 
 
