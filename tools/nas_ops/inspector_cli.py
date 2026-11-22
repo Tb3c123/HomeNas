@@ -65,6 +65,7 @@ class NasWatchdogCycle:
         week = time.strftime("%Y-W%W", now)
         if now.tm_hour == 23 and now.tm_min >= 55 and self._last_flush_day != day:
             self.reporter.flush_daily_log_to_ssd(date_str=day)
+            self.media_monitor.flush_daily_digest(self.reporter.send_telegram, date_str=day)
             self._last_flush_day = day
         if now.tm_hour == 3 and now.tm_min < 10 and self._last_backup_day != day:
             src = pathlib.Path("/kanboard-data/db.sqlite")

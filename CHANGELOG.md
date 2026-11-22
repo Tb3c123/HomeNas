@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.8.2] - 2026-11-22 *(Zero-Spam Daily Media Digest at 23:55 & Queue-Clear Notification)*
+### Changed
+- `tools/media_ops/arr_monitor.py`, `tools/nas_ops/inspector_cli.py` & `tests/test_live_media_monitor.py`: Tắt thông báo Telegram lẻ tẻ khi từng phim tải xong hoặc bị kẹt để chống spam; gom toàn bộ danh sách phim hoàn tất (`completed_today`) và phim bị kẹt (`stalled_today`) vào **1 bản tin Tổng hợp Cuối ngày duy nhất lúc 23:55 (`📊 [MEDIA DAILY DIGEST]`)** (hoặc khi hoàn tất sạch cả hàng đợi `🎉 [MEDIA QUEUE CLEAR]`), đồng thời hiển thị `Xong hôm nay: <N>` ngay trong lệnh `/status`.
+
 ## [v1.8.1] - 2026-11-22 *(LiveMediaMonitor Hotfix: Vanished *arr Import Detection, stoppedUP & Anti-Reset Stall Timer)*
 ### Fixed
 - `tools/media_ops/arr_monitor.py` & `tests/test_live_media_monitor.py`: Lưu `active_meta` (`name`, `progress`), bổ sung trạng thái `stoppedup` của qBittorrent v5.x, tự động bắt 100% sự kiện `🎬 [MEDIA DONE]` ngay cả khi Radarr/Sonarr import & xóa torrent khỏi qBittorrent giữa 2 chu kỳ poll (`progress >= 0.85`), dọn sạch hash rác `< 0.85`, giảm ngưỡng kẹt mặc định xuống 20 phút (`1200s`) và chống reset đồng hồ `stalled_since` oan khi tốc độ nhích nhẹ `< 100 KiB/s` hoặc đang `thermal_paused`.
@@ -117,32 +121,9 @@ Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orch
 - `platform/agy-config/settings.safe-turbo.json` & `apply_safe_turbo.py`: Chế độ "Safe-Turbo" (`agentMode: accept-edits`, `toolPermission: always-proceed`, `artifactReviewPolicy: always-proceed`) kèm `permissions.deny`/`ask` bảo vệ container lõi (`adguard-home`, `antigravity-cli`...) và công cụ gộp JSON không làm mất cấu hình cũ.
 - `docs/10-casaos-golive-runbook.md` & `tests/test_sprint1_platform.py`: Bổ sung hướng dẫn kích hoạt Safe-Turbo và unit test kiểm chứng gộp cấu hình an toàn.
 
-## [v1.0.5] - 2026-11-19 *(Multi-Session AGENTS.md)*
+## [v1.0.0–v1.0.5] - 2026-11-19 *(Sprint 1–5 Complete & Initial Go-Live Hotfixes)*
 ### Added
-- `AGENTS.md`: Tệp định hướng chuẩn cho `antigravity-cli` (37 dòng) giúp 4 phiên chat (`director`, `dept-nas-ops`, `dept-media`, `dept-dev`) tự động nạp đúng bộ nhớ/Skill, in Inline Receipt và tuân thủ toàn bộ chốt chặn bảo vệ/trần 150 dòng.
-
-## [v1.0.4] - 2026-11-19 *(Weekly Telegram Reminder — ToS-Safe Option 1)*
-### Added
-- `tools/nas_ops/inspector_cli.py`: Tự động bắn tin nhắn Telegram lúc 20:00 Chủ nhật kèm sẵn câu lệnh prompt copy 1 chạm cho `antigravity-cli` (tuân thủ 100% ToS, không dùng daemon ngoài tự gọi `agy -p`).
-
-## [v1.0.3] - 2026-11-19 *(Read-Only SQLite & Kanboard Bootstrap Hotfix)*
-### Added
-- `shared/tools/kanboard_client/bootstrap.py`: Module tự động đọc `api_token` (chế độ `mode=ro&immutable=1`) và khởi tạo Project `HomeNas Operations` (5 cột, 4 Swimlanes).
-### Fixed
-- `tools/nas_ops/backup_kanboard.py`: Mở file SQLite nguồn bằng URI `mode=ro&immutable=1` để tương thích 100% với volume mount `:ro`.
-
-## [v1.0.2] - 2026-11-19 *(Hook Path Hotfix)*
-### Fixed
-- `platform/hooks/hooks.json`: Chuyển sang đường dẫn tuyệt đối `/mnt/disk1/Workspace/HomeNas/shared/tools/guardrails/pre_tool_guard.py` để `PreToolUse` hook chạy chính xác khi `antigravity-cli` thực thi từ `/root/.gemini/config/`.
-
-## [v1.0.1] - 2026-11-19 *(Production Deployment Hotfix)*
-### Fixed
-- `tools/nas_ops/inspector_cli.py`: Bổ sung cờ `--daemon` cho vòng lặp giám sát 3 phút, flush 23:55, backup Kanboard 03:00 và tổng hợp tuần Chủ nhật 20:00.
-- `platform/docker-compose.yml`: Mount thêm `/dev/disk/by-id:/dev/disk/by-id:ro` cho container `homenas-watchdog` để chống đảo tên `sda`/`sdb` sau reboot.
-
-## [v1.0.0] - 2026-11-19 *(Sprint 1–5 Complete — Production Ready Release)*
-### Added
-- Toàn bộ hạ tầng Shared Platform (Sprint 1), NAS Watchdog & Bảo vệ nhiệt độ (Sprint 2), Media Sub-First & Dual-Disk Mirror (Sprint 3), Hermes 3-Tier Memory & 11 Micro-Agents (Sprint 4), Multi-Project Loader (`loader.py`), Runbook CasaOS (`docs/10-casaos-golive-runbook.md`) và E2E Dry-Run (`tests/test_sprint5_e2e_dryrun.py`).
+- Toàn bộ hạ tầng Shared Platform (Sprint 1), NAS Watchdog & Bảo vệ nhiệt độ (Sprint 2), Media Sub-First & Dual-Disk Mirror (Sprint 3), Hermes 3-Tier Memory & 11 Micro-Agents (Sprint 4), Multi-Project Loader (`loader.py`), Runbook CasaOS (`docs/10-casaos-golive-runbook.md`), `AGENTS.md` đa phiên và E2E Dry-Run (`tests/test_sprint5_e2e_dryrun.py`).
 
 ---
 *Lịch sử thiết kế Phase 1–4 (`v0.1.0` → `v1.0.0-design-complete`) được lưu trữ tại [`docs/changelog-v0-design.md`](docs/changelog-v0-design.md) để đảm bảo trần ≤ 150 dòng/file.*

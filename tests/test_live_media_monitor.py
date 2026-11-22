@@ -1,4 +1,4 @@
-"""Unit Tests for 0-Token 24/7 LiveMediaMonitor (v1.8.1: Vanished *arr Import, Anti-Reset Stall & stoppedUP)."""
+"""Unit Tests for 0-Token 24/7 LiveMediaMonitor (v1.8.2: Zero-Spam Daily Digest & Queue Clear)."""
 
 import json
 import pathlib
@@ -10,7 +10,7 @@ from tools.media_ops.arr_monitor import LiveMediaMonitor
 
 
 class LiveMediaMonitorTests(unittest.TestCase):
-    def test_completion_stalled_queue_clear_and_thermal_suppression(self) -> None:
+    def test_daily_digest_batches_completions_and_stalls_without_per_movie_spam(self) -> None:
         with tempfile.TemporaryDirectory(dir="/tmp") as tmp:
             tpath = pathlib.Path(tmp)
             state_file = tpath / "media_state.json"
@@ -31,41 +31,38 @@ class LiveMediaMonitorTests(unittest.TestCase):
                 bazarr_fetcher=lambda: 3,
             )
 
-            # Cycle 1 (t=1000): Baseline initialization (no spam for already-seeded h0)
+            # Cycle 1 (t=1000): Baseline initialization
             self.assertEqual(mon.poll_and_notify(send_tg=sent_messages.append, now_ts=1000), [])
-            status_line = mon.format_queue_status_line()
-            self.assertIn("Iron.Man.2008.2160p", status_line)
-            self.assertIn("45% @ 5.0 MB/s", status_line)
 
-            # Cycle 2 (t=1600): h1 reaches stoppedUP (qBittorrent v5.x); h2 flickers to downloading at 1 KB/s (must NOT reset stall timer!)
+            # Cycle 2 (t=1600): h1 finishes (stoppedUP); h2 still downloading slowly -> MUST NOT spam Telegram per movie!
             current_torrents[0]["state"] = "stoppedUP"
             current_torrents[0]["progress"] = 1.0
             current_torrents[1]["state"] = "downloading"
-            current_torrents[1]["dlspeed"] = 1024  # 1 KB/s < 50 KB/s threshold
-            current_torrents[1]["progress"] = 0.102  # < 1% progress delta
-            a2 = mon.poll_and_notify(send_tg=sent_messages.append, now_ts=1600)
-            self.assertEqual(len(a2), 1)
-            self.assertIn("🎬 [MEDIA DONE] 'Iron.Man.2008.2160p'", a2[0])
+            current_torrents[1]["dlspeed"] = 1024
+            current_torrents[1]["progress"] = 0.102
+            self.assertEqual(mon.poll_and_notify(send_tg=sent_messages.append, now_ts=1600), [])
+            self.assertIn("Xong hôm nay: 1", mon.format_queue_status_line())
 
-            # Cycle 3 (t=2000): Thermal paused = True -> must suppress alert AND preserve stalled_since=1000
-            thermal_file.write_text(json.dumps({"thermal_paused": True}), encoding="utf-8")
-            self.assertEqual(mon.poll_and_notify(send_tg=sent_messages.append, now_ts=2000), [])
+            # Cycle 3 (t=2300): h2 stalled >= 1200s -> recorded in daily state, zero immediate spam
+            self.assertEqual(mon.poll_and_notify(send_tg=sent_messages.append, now_ts=2300), [])
 
-            # Cycle 4 (t=2300): Thermal normal -> (2300 - 1000 = 1300s >= 1200s) fires MEDIA STALLED immediately without reset!
-            thermal_file.write_text(json.dumps({"thermal_paused": False}), encoding="utf-8")
-            a4 = mon.poll_and_notify(send_tg=sent_messages.append, now_ts=2300)
-            self.assertEqual(len(a4), 1)
-            self.assertIn("⚠️ [MEDIA STALLED] 'Thor.2011.2160p'", a4[0])
+            # 23:55 Daily Digest Flush -> sends exactly 1 consolidated daily message!
+            digest = mon.flush_daily_digest(send_tg=sent_messages.append, date_str="2026-11-22")
+            self.assertIsNotNone(digest)
+            self.assertEqual(len(sent_messages), 1)
+            self.assertIn("📊 [MEDIA DAILY DIGEST — 2026-11-22]", sent_messages[0])
+            self.assertIn("Iron.Man.2008.2160p", sent_messages[0])
+            self.assertIn("Thor.2011.2160p", sent_messages[0])
+            self.assertIn("Bazarr Sub Việt đang chờ: 3", sent_messages[0])
 
-            # Cycle 5 (t=2500): Last torrent h2 finishes -> both MEDIA DONE and MEDIA QUEUE CLEAR fire!
+            # Cycle 4 (t=2500): Last torrent h2 finishes -> fires MEDIA QUEUE CLEAR!
             current_torrents[1]["state"] = "stalledUP"
             current_torrents[1]["progress"] = 1.0
-            a5 = mon.poll_and_notify(send_tg=sent_messages.append, now_ts=2500)
-            self.assertEqual(len(a5), 2)
-            self.assertIn("🎬 [MEDIA DONE] 'Thor.2011.2160p'", a5[0])
-            self.assertIn("🎉 [MEDIA QUEUE CLEAR]", a5[1])
+            a4 = mon.poll_and_notify(send_tg=sent_messages.append, now_ts=2500)
+            self.assertEqual(len(a4), 1)
+            self.assertIn("🎉 [MEDIA QUEUE CLEAR]", a4[0])
 
-    def test_vanished_torrent_imported_by_arr_and_canceled_cleanup(self) -> None:
+    def test_vanished_torrent_imported_by_arr_recorded_in_daily_digest(self) -> None:
         with tempfile.TemporaryDirectory(dir="/tmp") as tmp:
             tpath = pathlib.Path(tmp)
             state_file = tpath / "media_state.json"
@@ -74,7 +71,7 @@ class LiveMediaMonitorTests(unittest.TestCase):
 
             torrents: list[dict[str, Any]] = [
                 {"hash": "h_fast", "name": "Avengers.2012.2160p", "state": "downloading", "progress": 0.92, "dlspeed": 20971520, "num_seeds": 25},
-                {"hash": "h_cancel", "name": "Canceled.Movie", "state": "stalledDL", "progress": 0.15, "dlspeed": 0, "num_seeds": 0},
+                {"hash": "h_other", "name": "Still.Running.Movie", "state": "downloading", "progress": 0.30, "dlspeed": 5242880, "num_seeds": 10},
             ]
             mon = LiveMediaMonitor(
                 state_file=state_file, thermal_state_file=thermal_file,
@@ -82,16 +79,11 @@ class LiveMediaMonitorTests(unittest.TestCase):
             )
             mon.poll_and_notify(now_ts=1000)
 
-            # Both torrents vanish before next 3m poll: h_fast (>=0.85) was imported & removed by Radarr; h_cancel (<0.85) was deleted by user
-            torrents.clear()
-            alerts = mon.poll_and_notify(now_ts=1180)
-            self.assertEqual(len(alerts), 2)
-            self.assertIn("🎬 [MEDIA DONE] 'Avengers.2012.2160p' đã tải xong & import 100%!", alerts[0])
-            self.assertIn("🎉 [MEDIA QUEUE CLEAR]", alerts[1])
-
+            # h_fast vanishes after Radarr import while h_other keeps running -> recorded silently in completed_today
+            torrents.pop(0)
+            self.assertEqual(mon.poll_and_notify(now_ts=1180), [])
             saved = json.loads(state_file.read_text(encoding="utf-8"))
-            self.assertEqual(saved["active_meta"], {})
-            self.assertEqual(saved["stalled_since"], {})
+            self.assertEqual(saved["completed_today"], ["Avengers.2012.2160p"])
 
 
 if __name__ == "__main__":
