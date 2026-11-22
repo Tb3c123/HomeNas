@@ -7,3 +7,4 @@
 
 ## Learned Observations
 - [2026-11-19] Avoid naming local packages `platform` to prevent shadowing Python stdlib `platform`; place shared tools under `shared/tools/` and `tools/`.
+- [2026-11-22] Giữ nguyên mô hình điều phối v1.6.1 hiện tại (không chế thêm cơ chế Handshake); chờ Google Antigravity mở chính thức tính năng Multi-Tab Handshake / Peer-Tab Wakeup trong UI mới phát triển tiếp.
