@@ -2,6 +2,12 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.6.0] - 2026-11-21 *(Option C AI-Controlled Direct Media Fetcher: Fshare / Google Drive / TeraBox)*
+### Added
+- `tools/media_ops/direct_fetcher.py` & `inspector_cli.py direct-fetch`: Bộ tải trực tiếp Phương án C cho `Elena (dept-media)` (tự tải thẳng Google Drive ID; nhận Direct-CDN link `download*.fshare.vn` / TeraBox từ trình duyệt cùng mạng LAN không cần API Fshare đã đóng, kèm tùy chọn Web Cookie `FSHARE_COOKIE`/`TERABOX_COOKIE`), tích hợp đủ 5 chốt bảo vệ (chặn đuôi `.exe`/`.sh`, kiểm tra `thermal_paused`, cân bằng `disk1`/`disk2` chuẩn Jellyfin, tải `.part` có resume).
+### Changed
+- `skills/dept-media/sub-first-download/SKILL.md`, `docs/departments/02-dept-media.md`, `platform/.env.example` & `tests/test_sprint3_media_engine.py`: Cập nhật quy trình Luồng B cho `Elena` và bổ sung unit test kiểm chứng 5 chốt an toàn.
+
 ## [v1.5.2] - 2026-11-21 *(External Skill 1000-Line / 64KB Controlled Cap & 2-Step Security Audit Sync)*
 ### Changed
 - `shared/tools/guardrails/pre_tool_guard.py`: Giữ cứng trần `<= 150 dòng` cho toàn bộ code/docs/test/skill nội bộ, đồng thời mở ngoại lệ có kiểm soát `<= 1000 dòng / 64 KB` cho `skills/**/SKILL.md` để tương thích với các skill nguồn ngoài đầy đủ nạp qua `HomeNas Manager (:8090)`.

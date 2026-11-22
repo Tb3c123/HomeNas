@@ -47,6 +47,13 @@ Cả 2 ổ 10TB trong dock Acasis (`disk1` WD Gold & `disk2` WD Purple Pro) sử
 - **Auto-Fallback khi tải chậm/stalled:** Nếu tốc độ `< 500 KB/s`, `stalled` hoặc `ETA > 2x` liên tiếp 2 mốc → xóa bản kẹt, nạp cặp dự phòng `#2` khớp Sub Việt + bắn Telegram. Hết `#2, #3` → đẩy thẻ Kanboard `Waiting Review` (`blocked`).
 
 ## 4. Playbook, AGY Skills & Phân quyền (`skills/dept-media/`)
-- **Skills (Lazy Load):** `sub-first-search.md`, `disk-balancer-router.md`, `download-fallback-triage.md`, `media-library-audit.md`.
-- **Tự chạy (Fire-and-Forget):** Tìm sub & chọn bản Best-Value (không khóa cứng GB), chọn ổ cân bằng `disk1`/`disk2` (giữ nguyên ổ cho TVShows), đẩy hàng đợi tuần tự 1-phim-1-lượt, canh 20–30% ETA, Auto-Fallback `#2/#3`.
+- **Skills (Lazy Load):** `sub-first-download/SKILL.md`.
+- **Tự chạy (Fire-and-Forget):** Tìm sub & chọn bản Best-Value (không khóa cứng GB), chọn ổ cân bằng `disk1`/`disk2` (giữ nguyên ổ cho TVShows), đẩy hàng đợi tuần tự 1-phim-1-lượt, canh 20–30% ETA, Auto-Fallback `#2/#3`, và tải trực tiếp link Fshare/Drive/TeraBox qua 5 chốt an toàn.
 - **Bắt buộc PO duyệt (`needs-approval`):** Xóa phim đã nằm trong thư viện `Movies/` hoặc `TVShows/`, dọn thư mục cũ, hoặc tải bản không có Sub Việt chuẩn.
+
+## 5. Luồng Tải Trực Tiếp Fshare / Google Drive / TeraBox (Phương Án C — Không Cần API Fshare)
+Do Fshare đã dừng cấp API Developer cho cá nhân, `tools/media_ops/direct_fetcher.py` vận hành theo **Phương án C (Hybrid Direct-CDN + Google Drive + Web Cookie)** với 5 chốt bảo vệ:
+1. **Google Drive (`drive.google.com/file/d/<ID>`):** Tự động trích xuất `file_id` và tải thẳng qua `drive.usercontent.google.com` (`confirm=t`) — không cần bấm trình duyệt.
+2. **Fshare & TeraBox qua Direct-CDN Link (Khuyên dùng — Bền vững 100%):** PO bấm tải trên trình duyệt (cùng mạng Wi-Fi/LAN với NAS) → Tạm dừng → Copy địa chỉ link tải thật (`https://download*.fshare.vn/dl/...` hoặc CDN TeraBox) gửi cho `Elena`. NAS tiếp nhận và kéo max tốc độ VIP về ổ đích (`disk1`/`disk2`).
+3. **Fshare & TeraBox qua Web Cookie (Tùy chọn):** Nếu cấu hình `FSHARE_COOKIE` / `TERABOX_COOKIE` trong `platform/.env`, hệ thống tự lấy CSRF token từ web session để giải link `fshare.vn/file/<CODE>`.
+4. **5 Chốt An Toàn Cứng:** Chặn đuôi file độc hại (`.exe`, `.sh`, `.apk`...), kiểm tra `thermal_paused` của 2 ổ Acasis trước khi ghi, tự cân bằng `disk1`/`disk2` theo chuẩn thư mục Jellyfin, và tải với hậu tố `.part` (`aria2c` / `curl -C -` có resume).

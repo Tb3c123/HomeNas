@@ -97,6 +97,53 @@ class Sprint3MediaEngineTests(unittest.TestCase):
             self.assertEqual(res_done["action"], "COMPLETED")
             self.assertEqual(res_done["next_active_task_id"], 102)
 
+    def test_option_c_direct_media_fetcher_safety_and_routing(self) -> None:
+        from tools.media_ops.direct_fetcher import classify_and_validate_url, plan_or_execute_direct_fetch
+
+        with self.assertRaises(ValueError):
+            classify_and_validate_url("https://download901.fshare.vn/dl/tok/malware.exe")
+        with self.assertRaises(ValueError):
+            classify_and_validate_url("https://evil.example.com/hack.sh")
+
+        gd = classify_and_validate_url("https://drive.google.com/file/d/1AbCdEfGhIjKlMnOp/view?usp=sharing")
+        self.assertEqual(gd["provider"], "gdrive")
+        self.assertIn("1AbCdEfGhIjKlMnOp", gd["direct_url"])
+
+        fs_cdn = classify_and_validate_url("https://download802.fshare.vn/dl/xyz123/Mai.2024.2160p.mkv")
+        self.assertEqual(fs_cdn["provider"], "fshare_cdn")
+
+        with tempfile.TemporaryDirectory(dir="/tmp") as tmp:
+            tpath = pathlib.Path(tmp)
+            d1, d2 = tpath / "disk1", tpath / "disk2"
+            ensure_mirror_structure([d1, d2])
+            tflag = tpath / "thermal.json"
+
+            tflag.write_text(json.dumps({"thermal_paused": True}), encoding="utf-8")
+            therm_res = plan_or_execute_direct_fetch(
+                "https://download802.fshare.vn/dl/xyz/Mai.mkv", "Mai (2024)",
+                disk1_root=d1, disk2_root=d2, thermal_state_file=tflag,
+            )
+            self.assertEqual(therm_res["status"], "THERMAL_WAIT")
+
+            tflag.write_text(json.dumps({"thermal_paused": False}), encoding="utf-8")
+            page_res = plan_or_execute_direct_fetch(
+                "https://www.fshare.vn/file/ABCDEF123456", "Mai (2024)",
+                category="Vietnamese", disk1_root=d1, disk2_root=d2,
+                thermal_state_file=tflag, free_space_override={"disk1": 400, "disk2": 950},
+            )
+            self.assertEqual(page_res["status"], "NEEDS_BROWSER_DIRECT_LINK")
+            self.assertEqual(page_res["target_disk"], "disk2")
+
+            dl_res = plan_or_execute_direct_fetch(
+                "https://download802.fshare.vn/dl/xyz/Mai.2024.2160p.mkv", "Mai (2024)",
+                category="Vietnamese", disk1_root=d1, disk2_root=d2,
+                thermal_state_file=tflag, free_space_override={"disk1": 400, "disk2": 950},
+                execute=True, runner=lambda cmd: 0,
+            )
+            self.assertEqual(dl_res["status"], "DOWNLOADED")
+            self.assertEqual(dl_res["target_disk"], "disk2")
+            self.assertIn("Movies/Vietnamese/Mai (2024)/Mai (2024).mkv", dl_res["dest_path"])
+
 
 if __name__ == "__main__":
     unittest.main()
