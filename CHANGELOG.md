@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.8.1] - 2026-11-22 *(LiveMediaMonitor Hotfix: Vanished *arr Import Detection, stoppedUP & Anti-Reset Stall Timer)*
+### Fixed
+- `tools/media_ops/arr_monitor.py` & `tests/test_live_media_monitor.py`: Lưu `active_meta` (`name`, `progress`), bổ sung trạng thái `stoppedup` của qBittorrent v5.x, tự động bắt 100% sự kiện `🎬 [MEDIA DONE]` ngay cả khi Radarr/Sonarr import & xóa torrent khỏi qBittorrent giữa 2 chu kỳ poll (`progress >= 0.85`), dọn sạch hash rác `< 0.85`, giảm ngưỡng kẹt mặc định xuống 20 phút (`1200s`) và chống reset đồng hồ `stalled_since` oan khi tốc độ nhích nhẹ `< 100 KiB/s` hoặc đang `thermal_paused`.
+
 ## [v1.8.0] - 2026-11-21 *(4 On-Demand Dev MCP Plugins: Context7, GitHub, Pure-Python SQLite-RO & Playwright)*
 ### Added
 - `shared/tools/mcp_servers/sqlite_ro_mcp.py`: MCP Stdio Server thuần Python 3.11 (0 dependency ngoài) đọc SQLite với khóa Read-Only 3 lớp (`mode=ro&immutable=1`, `PRAGMA query_only=ON`, SQL whitelist chỉ cho phép `SELECT`/`PRAGMA`/`EXPLAIN`).
