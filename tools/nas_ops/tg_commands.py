@@ -84,6 +84,8 @@ class TelegramCommandHandler:
         return "ℹ️ Lệnh không hỗ trợ. Gõ /help để xem đúng 4 lệnh hiện có."
 
     def _build_status_text(self) -> str:
+        from tools.media_ops.arr_monitor import LiveMediaMonitor
+
         snap = self.snapshot_fn()
         hdds = snap.get("hdds", {})
         d1 = hdds.get("disk1", {})
@@ -92,10 +94,12 @@ class TelegramCommandHandler:
         d2_s = f"{d2['temp_c']}°C" if d2.get("temp_c") is not None else d2.get("status", "unknown")
         rc_file = self.state_dir / "remote_status.txt"
         rc_line = rc_file.read_text(encoding="utf-8").strip().splitlines()[-1] if rc_file.exists() and rc_file.read_text(encoding="utf-8").strip() else "Chưa bật remote_keeper.sh"
+        media_line = LiveMediaMonitor().format_queue_status_line()
         return (
             f"🖥️ Morefine N6 Status:\n"
             f"- CPU N200: {snap.get('cpu_temp_c')}°C | Load5: {snap.get('load5')} | RAM: {snap.get('ram_pct')}%\n"
             f"- HDD Acasis: disk1={d1_s} | disk2={d2_s}\n"
+            f"- Media Queue: {media_line}\n"
             f"- Remote Control: {rc_line[:160]}"
         )
 

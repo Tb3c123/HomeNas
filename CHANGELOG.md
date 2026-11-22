@@ -2,6 +2,12 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.7.0] - 2026-11-21 *(0-Token 24/7 Live Media Watcher: qBittorrent/Bazarr Alerts & Telegram /status Queue)*
+### Added
+- `tools/media_ops/arr_monitor.py` & `tests/test_live_media_monitor.py`: Bộ giám sát tải phim nền 0-token kết nối read-only tới qBittorrent WebUI API & Bazarr API, lưu state dedup trên RAM (`/tmp/homenas_media_monitor.json`), bắn Telegram khi: (a) Phim/Season tải xong 100% + số Sub Việt chờ trên Bazarr, (b) Torrent bị kẹt `stalledDL`/0 seed quá 45 phút (tự bỏ qua nếu đang `thermal_paused`), (c) Toàn bộ hàng đợi hoàn tất (`MEDIA QUEUE CLEAR`).
+### Changed
+- `tools/nas_ops/inspector_cli.py` & `tools/nas_ops/tg_commands.py`: Tích hợp `LiveMediaMonitor.poll_and_notify()` vào chu kỳ 3 phút của `homenas-watchdog` và hiển thị dòng `- Media Queue:` (phim đang tải, `%`, `MB/s`, số chờ/kẹt) ngay trong lệnh Telegram `/status`.
+
 ## [v1.6.1] - 2026-11-21 *(Direct Download Cheat-Sheet Guide & README Quick-Link)*
 ### Added
 - `docs/12-direct-download-guide.md` & `README.md`: Sổ tay hướng dẫn copy 1 chạm cách tải phim từ Google Drive, Fshare VIP (Direct-CDN 5 giây không cần API) và TeraBox, đặt link nổi bật ngay trang chủ `README.md`.

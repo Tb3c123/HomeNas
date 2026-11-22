@@ -10,6 +10,7 @@ import time
 from typing import Any
 
 from shared.tools.kanboard_client.service import KanboardService
+from tools.media_ops.arr_monitor import LiveMediaMonitor
 from tools.nas_ops.backup_kanboard import backup_kanboard_sqlite
 from tools.nas_ops.emergency import EmergencyExecutor
 from tools.nas_ops.policy import ThermalPolicyEngine
@@ -24,11 +25,13 @@ class NasWatchdogCycle:
         emergency: EmergencyExecutor | None = None,
         reporter: ThermalReporter | None = None,
         kb_service: KanboardService | None = None,
+        media_monitor: LiveMediaMonitor | None = None,
     ) -> None:
         self.policy = policy or ThermalPolicyEngine()
         self.emergency = emergency or EmergencyExecutor()
         self.reporter = reporter or ThermalReporter()
         self.kb = kb_service or KanboardService()
+        self.media_monitor = media_monitor or LiveMediaMonitor()
         self._last_flush_day = ""
         self._last_backup_day = ""
         self._last_weekly_label = ""
@@ -53,6 +56,7 @@ class NasWatchdogCycle:
         elif level == "RECOVERY":
             msg = f"✅ [NAS RECOVERY] Cooled down (HDD:{verdict['max_hdd_c']}C). Ready for PO review to unpause."
             self.reporter.send_telegram(msg)
+        verdict["media_alerts"] = self.media_monitor.poll_and_notify(self.reporter.send_telegram)
         return verdict
 
     def run_scheduled_housekeeping(self) -> None:
