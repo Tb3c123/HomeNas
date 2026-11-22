@@ -56,6 +56,17 @@ services:
       - agy-net
       - media-stack_default
 
+  playwright-mcp:
+    image: mcr.microsoft.com/playwright/mcp:latest
+    container_name: playwright-mcp
+    profiles: ["dev-mcp"]
+    restart: "no"
+    command: ["--headless", "--port", "8931", "--host", "0.0.0.0"]
+    ports:
+      - "127.0.0.1:8931:8931"
+    networks:
+      - agy-net
+
 networks:
   agy-net:
     name: agy-net

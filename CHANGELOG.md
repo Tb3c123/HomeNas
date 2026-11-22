@@ -2,6 +2,13 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.8.0] - 2026-11-21 *(4 On-Demand Dev MCP Plugins: Context7, GitHub, Pure-Python SQLite-RO & Playwright)*
+### Added
+- `shared/tools/mcp_servers/sqlite_ro_mcp.py`: MCP Stdio Server thuần Python 3.11 (0 dependency ngoài) đọc SQLite với khóa Read-Only 3 lớp (`mode=ro&immutable=1`, `PRAGMA query_only=ON`, SQL whitelist chỉ cho phép `SELECT`/`PRAGMA`/`EXPLAIN`).
+- `platform/agy-config/sync_mcp_plugins.py` & `tests/test_mcp_plugins.py`: Bộ đồng bộ & bật/tắt 4 plugin (`mcp-context7`, `mcp-github`, `mcp-sqlite-ro`, `mcp-playwright`) vào `/root/.gemini/config/plugins/` (mặc định `disabled: true` để giữ nhẹ ngữ cảnh cho `Main`/`NAS`/`Media`, bảo toàn `config.json` của PO).
+### Changed
+- `platform/docker-compose.yml`, `platform/.env.example`, `shared/templates/DEV_TEAM_RULES.md` & `docs/departments/03-dept-dev.md`: Bổ sung container on-demand `playwright-mcp` (`profiles: ["dev-mcp"]`, `:8931`) và tài liệu hóa cho mọi dự án con qua Live-Link.
+
 ## [v1.7.0] - 2026-11-21 *(0-Token 24/7 Live Media Watcher: qBittorrent/Bazarr Alerts & Telegram /status Queue)*
 ### Added
 - `tools/media_ops/arr_monitor.py` & `tests/test_live_media_monitor.py`: Bộ giám sát tải phim nền 0-token kết nối read-only tới qBittorrent WebUI API & Bazarr API, lưu state dedup trên RAM (`/tmp/homenas_media_monitor.json`), bắn Telegram khi: (a) Phim/Season tải xong 100% + số Sub Việt chờ trên Bazarr, (b) Torrent bị kẹt `stalledDL`/0 seed quá 45 phút (tự bỏ qua nếu đang `thermal_paused`), (c) Toàn bộ hàng đợi hoàn tất (`MEDIA QUEUE CLEAR`).

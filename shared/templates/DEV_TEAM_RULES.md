@@ -10,7 +10,12 @@
 ## 2. Cơ chế Nạp Ngữ cảnh & 48+ Dev Skills (Lazy Load)
 1. **Đầu phiên:** Đọc `/mnt/disk1/Workspace/HomeNas/shared/memory/USER.md` + `./memory/MEMORY.md` của dự án hiện tại.
 2. **Tra cứu Kỹ năng:** Đọc bảng mục lục `/mnt/disk1/Workspace/HomeNas/skills/dept-dev/CATALOG.md` (48 skills qua 6 lĩnh vực) và **chỉ mở đúng 1–2 tệp `SKILL.md` phù hợp với tác vụ đang làm**.
-3. **Giao tiếp Liên-Agent:** Bàn giao qua Contract Files gọn (`<= 60 dòng`) và gói tin `STATUS | FILE | ACTION`. Tối đa **2 vòng tự sửa (`MAX_RETRY_LOOPS = 2`)** giữa Coder và QA/Reviewer; nếu vẫn lỗi thì gắn `blocked` trên Kanboard và báo PO.
+3. **Bộ 4 MCP Plugins Chuyên Dụng (`platform/agy-config/sync_mcp_plugins.py`):** Mặc định tắt (`disabled: true`) để giữ nhẹ ngữ cảnh cho `Main/NAS/Media`; bật theo nhu cầu dự án Dev (`agy plugin enable <name>`):
+   - `mcp-context7`: Tra cứu tài liệu thư viện phiên bản mới nhất (`https://mcp.context7.com/mcp`).
+   - `mcp-github`: Quản lý PR/Issue/Actions qua `GITHUB_PERSONAL_ACCESS_TOKEN`.
+   - `mcp-sqlite-ro`: Soi DB SQLite (`Kanboard`, `*arr`, project DB) ở chế độ **Read-Only 3 lớp** (`sqlite_ro_mcp.py`).
+   - `mcp-playwright`: Kiểm thử giao diện Web headless qua container on-demand (`./platform/compose.sh --profile dev-mcp up -d playwright-mcp`).
+4. **Giao tiếp Liên-Agent:** Bàn giao qua Contract Files gọn (`<= 60 dòng`) và gói tin `STATUS | FILE | ACTION`. Tối đa **2 vòng tự sửa (`MAX_RETRY_LOOPS = 2`)** giữa Coder và QA/Reviewer; nếu vẫn lỗi thì gắn `blocked` trên Kanboard và báo PO.
 
 ## 3. Ràng buộc Cứng & Tự học Minh bạch (Hard Guardrails)
 1. **Trần cứng Toàn Dự Án:** Mọi file (`code`, `docs`, `test`, `script`, `CSS`, skill tự viết nội bộ) đều **`<= 150 dòng`** (cấm nén dòng bằng `;`). Riêng `skills/**/SKILL.md` nguồn ngoài nạp qua sàng lọc 2 bước (HomeNas Manager `:8090` / `fetcher.py`) được phép tối đa **`<= 1000 dòng / 64 KB`** (chặn cứng `curl|sh`, `rm -rf`, `git --force`, dừng 6 container lõi, `/etc/shadow`, prompt injection). Kiểm tra bằng:

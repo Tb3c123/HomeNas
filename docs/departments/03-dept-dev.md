@@ -48,3 +48,10 @@ Chỉ kích hoạt đúng 2–4 agent cần cho từng thẻ task (qua `agy` sub
 ## 6. Low-Wear CI & Phân quyền
 - **Bảo vệ cứng (`hooks.json` `PreToolUse` — 0 Token):** Chặn `git push --force`, `git reset --hard`, file vượt 150 dòng, và lệnh deploy đè container CasaOS khi chưa có PO duyệt.
 - **Bắt buộc PO duyệt (`needs-approval`):** Merge vào `main`, deploy/build đè container CasaOS, xóa nhánh/repo, hoặc kích hoạt chính thức Skill mới (`skill-proposal`).
+
+## 7. Bộ 4 MCP Plugins Chuyên Dụng (`v1.8.0` — On-Demand / Zero-Bloat)
+Đồng bộ vào `/root/.gemini/config/plugins/` qua `python3 platform/agy-config/sync_mcp_plugins.py` (mặc định `disabled: true` để không làm phình context window ở các phiên `Main` / `NAS Ops` / `Media`):
+1. **`mcp-context7` (Streamable HTTP — 0 RAM):** Kết nối `https://mcp.context7.com/mcp` tra cứu docs thư viện/framework mới nhất.
+2. **`mcp-github` (Streamable HTTP — 0 RAM):** Kết nối `https://api.githubcopilot.com/mcp/` qua biến môi trường `${GITHUB_PERSONAL_ACCESS_TOKEN}`.
+3. **`mcp-sqlite-ro` (Pure-Python 3.11 Stdio — 0 Deps):** Script `shared/tools/mcp_servers/sqlite_ro_mcp.py` đọc SQLite với khóa Read-Only 3 lớp (`mode=ro&immutable=1`, `PRAGMA query_only=ON`, SQL whitelist chỉ cho phép `SELECT`/`PRAGMA`/`EXPLAIN`).
+4. **`mcp-playwright` (Docker On-Demand Profile `dev-mcp`):** Container `mcr.microsoft.com/playwright/mcp:latest` (`:8931`), chỉ bật khi cần test UI bằng `./platform/compose.sh --profile dev-mcp up -d playwright-mcp`.
