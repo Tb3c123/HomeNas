@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.6.1] - 2026-11-21 *(Direct Download Cheat-Sheet Guide & README Quick-Link)*
+### Added
+- `docs/12-direct-download-guide.md` & `README.md`: Sổ tay hướng dẫn copy 1 chạm cách tải phim từ Google Drive, Fshare VIP (Direct-CDN 5 giây không cần API) và TeraBox, đặt link nổi bật ngay trang chủ `README.md`.
+
 ## [v1.6.0] - 2026-11-21 *(Option C AI-Controlled Direct Media Fetcher: Fshare / Google Drive / TeraBox)*
 ### Added
 - `tools/media_ops/direct_fetcher.py` & `inspector_cli.py direct-fetch`: Bộ tải trực tiếp Phương án C cho `Elena (dept-media)` (tự tải thẳng Google Drive ID; nhận Direct-CDN link `download*.fshare.vn` / TeraBox từ trình duyệt cùng mạng LAN không cần API Fshare đã đóng, kèm tùy chọn Web Cookie `FSHARE_COOKIE`/`TERABOX_COOKIE`), tích hợp đủ 5 chốt bảo vệ (chặn đuôi `.exe`/`.sh`, kiểm tra `thermal_paused`, cân bằng `disk1`/`disk2` chuẩn Jellyfin, tải `.part` có resume).
