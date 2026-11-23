@@ -2,6 +2,12 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v2.0.0] - 2026-11-22 *(Auto Dead-Torrent Healer via Radarr/Sonarr & Solo Tech Secretary Topology)*
+### Added
+- `tools/media_ops/dead_torrent_healer.py` & `tests/test_dead_torrent_healer.py`: Luồng nền tự động mỗi 12 phút trong `homenas-watchdog` kiểm tra torrent active (`downloading`, `stalledDL`, `metaDL`, `missingFiles`, bỏ qua `queuedDL` và `thermal_paused`); với torrent `< 5%` chết `0` seed `> 20 phút` (hoặc `missingFiles`) tự thử `reannounce` + bơm public trackers ở kỳ 1, nếu kỳ sau vẫn kẹt tự gọi API Radarr/Sonarr (`DELETE /api/v3/queue/{id}?removeFromClient=true&blocklist=true&skipRedownload=false`) để gỡ & tìm bản thay thế; bảo vệ không xóa torrent `>= 20%` còn `> 5` seed (chỉ báo nhẹ sau `> 2 tiếng`).
+### Changed
+- `AGENTS.md`, `project.yaml`, `skills/director/orchestrate-and-digest/SKILL.md` & `shared/tools/kanboard_client/bootstrap.py`: Loại bỏ hoàn toàn phòng `Dept-Dev` (11 Micro-Agents) khỏi `HomeNas` (chỉ dùng cho các Project phần mềm riêng qua `/mnt/disk1/Workspace/shared`); tái định nghĩa `Liam` thành **Thư ký Kỹ thuật đơn lẻ (`Liam - Tech Secretary`)** chuyên hỗ trợ viết/sửa script hệ thống cho team.
+
 ## [v1.9.0] - 2026-11-22 *(Option 1+ Canonical `/Workspace/shared` Namespace & Child-Project Auto-Migrator)*
 ### Added
 - `shared/tools/project_loader/bootstrap_workspace.py`: Tự động tạo không gian tên ngang hàng `/mnt/disk1/Workspace/shared` (kèm cầu nối `/mnt/disk1/Workspace/shared/skills/dept-dev`) và tự động nâng cấp `AGENTS.md` + `project.yaml` của toàn bộ dự án con hiện có (`HomeManager`, `stochastic-matrix-lab`...) sang đường dẫn `/mnt/disk1/Workspace/shared/...` độc lập, xóa bỏ sự phụ thuộc tên `HomeNas` mà vẫn giữ 1 repo Git cập nhật 1 chạm.

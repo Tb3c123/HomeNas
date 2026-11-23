@@ -11,6 +11,7 @@ from typing import Any
 
 from shared.tools.kanboard_client.service import KanboardService
 from tools.media_ops.arr_monitor import LiveMediaMonitor
+from tools.media_ops.dead_torrent_healer import DeadTorrentHealer
 from tools.nas_ops.backup_kanboard import backup_kanboard_sqlite
 from tools.nas_ops.emergency import SOFT_THROTTLE_BPS, EmergencyExecutor
 from tools.nas_ops.policy import ThermalPolicyEngine
@@ -28,6 +29,7 @@ class NasWatchdogCycle:
         reporter: ThermalReporter | None = None,
         kb_service: KanboardService | None = None,
         media_monitor: LiveMediaMonitor | None = None,
+        dead_healer: DeadTorrentHealer | None = None,
         emergency_cooldown_sec: int = EMERGENCY_COOLDOWN_SEC,
     ) -> None:
         self.policy = policy or ThermalPolicyEngine()
@@ -35,12 +37,14 @@ class NasWatchdogCycle:
         self.reporter = reporter or ThermalReporter()
         self.kb = kb_service or KanboardService()
         self.media_monitor = media_monitor or LiveMediaMonitor()
+        self.dead_healer = dead_healer or DeadTorrentHealer()
         self.emergency_cooldown_sec = emergency_cooldown_sec
         self._last_flush_day = ""
         self._last_backup_day = ""
         self._last_weekly_label = ""
         self._last_emergency_tg_ts = 0.0
         self._throttled = False
+        self._cycle_count = 0
 
     def run_once(self, snapshot: dict[str, Any] | None = None, elapsed_min: float = 3.0, now_ts: float | None = None) -> dict[str, Any]:
         snap = snapshot or collect_snapshot()
@@ -58,7 +62,6 @@ class NasWatchdogCycle:
             self._throttled = False
 
         if level == "WARNING":
-            # Zero-Noise: DO NOT send instant Telegram for WARNING (logged in RAM & Kanboard dedup only)
             msg = f"⚠️ [NAS WARNING] HDD:{verdict['max_hdd_c']}C CPU:{verdict['cpu_temp_c']}C | {reasons}"
             self.kb.create_task("[NAS] Thermal/Load Warning", msg, tags=["daily-alert"], dedup_key="nas:thermal", author="watchdog")
         elif level == "EMERGENCY":
@@ -76,7 +79,11 @@ class NasWatchdogCycle:
             self._last_emergency_tg_ts = 0.0
             msg = f"✅ [NAS AUTO-RECOVERY] Cooled down (HDD:{verdict['max_hdd_c']}C). Auto-unpaused: {','.join(unpaused) or 'all'}."
             self.reporter.send_telegram(msg)
+
         verdict["media_alerts"] = self.media_monitor.poll_and_notify(self.reporter.send_telegram)
+        self._cycle_count += 1
+        if self._cycle_count % 4 == 0:  # Every 12 minutes (4 x 3m cycles)
+            verdict["healer_alerts"] = self.dead_healer.run_heal_cycle(self.reporter.send_telegram)
         return verdict
 
     def run_scheduled_housekeeping(self) -> None:

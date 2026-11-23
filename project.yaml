@@ -35,20 +35,11 @@ departments:
     skills_dir: "./skills/dept-media"
     allowed_tools: ["kanboard-client", "media-inspector"]
 
-  dept-dev:
-    swimlane: "Dev Studio"
+  # Solo Tech Secretary for HomeNas (NOT a 11-agent product dev department; full dev teams live only in standalone projects)
+  tech-secretary:
+    kanboard_author: "dept-dev"
+    display_name: "Liam (Tech Secretary)"
+    swimlane: "Tech Secretary / Scripts"
     memory_file: "./memory/dept-dev/MEMORY.md"
     skills_dir: "./skills/dept-dev"
-    allowed_tools: ["kanboard-client", "git", "gh", "pytest", "ruff"]
-    micro_agents:
-      - "dev-pm-lead"
-      - "dev-ba"
-      - "dev-ux-ui"
-      - "dev-architect"
-      - "dev-backend"
-      - "dev-frontend"
-      - "dev-refactor"
-      - "dev-qa-tester"
-      - "dev-security-reviewer"
-      - "dev-devops"
-      - "dev-docs-curator"
+    allowed_tools: ["kanboard-client", "git", "pytest"]

@@ -13,7 +13,7 @@ AGENT_USERS = [
     ("director", "Alex (Director)"),
     ("dept-nas-ops", "Marcus (NAS Ops)"),
     ("dept-media", "Elena (Media)"),
-    ("dept-dev", "Liam (Dev Lead)"),
+    ("dept-dev", "Liam (Tech Secretary)"),
     ("watchdog", "Sentinel (Watchdog)"),
 ]
 
