@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# Strict Whitelist Host-Side CasaOS Native App Apply Keeper (runs on Debian host, NOT in container).
+# Strict Whitelist Host-Side CasaOS Native App Apply/Install Keeper (runs on Debian host via systemd).
 # Watches /mnt/disk1/Workspace/HomeNas/.state/casaos_apply_req.json and executes ONLY:
-#   casaos-cli app-management apply <slug> --file=/mnt/disk1/Workspace/<dir>/casaos-compose.yml
+#   1. casaos-cli app-management apply <slug> --file=/mnt/disk1/Workspace/<dir>/casaos-compose.yml
+#   2. On 404 Not Found (first-time install), fallback to:
+#      casaos-cli app-management install -f /mnt/disk1/Workspace/<dir>/casaos-compose.yml
 
 set -euo pipefail
 
@@ -37,10 +39,24 @@ except Exception as e:
     if [ "${app}" = "ERR" ]; then
       echo "[${ts}] REJECTED: ${fpath}" > "${RES_FILE}"
     else
-      if output="$(casaos-cli app-management apply "${app}" --file="${fpath}" 2>&1)"; then
-        echo "[${ts}] OK app=${app} file=${fpath} :: ${output}" > "${RES_FILE}"
+      set +e
+      output="$(casaos-cli app-management apply "${app}" --file="${fpath}" 2>&1)"
+      rc=$?
+      set -e
+      if [ "${rc}" -eq 0 ]; then
+        echo "[${ts}] APPLIED app=${app} file=${fpath} :: ${output}" > "${RES_FILE}"
+      elif echo "${output}" | grep -Eqi "404|not found"; then
+        set +e
+        inst_out="$(casaos-cli app-management install -f "${fpath}" 2>&1)"
+        inst_rc=$?
+        set -e
+        if [ "${inst_rc}" -eq 0 ]; then
+          echo "[${ts}] INSTALLED app=${app} file=${fpath} :: ${inst_out}" > "${RES_FILE}"
+        else
+          echo "[${ts}] FAILED_INSTALL app=${app} file=${fpath} :: ${inst_out}" > "${RES_FILE}"
+        fi
       else
-        echo "[${ts}] FAILED app=${app} file=${fpath} :: ${output}" > "${RES_FILE}"
+        echo "[${ts}] FAILED_APPLY app=${app} file=${fpath} :: ${output}" > "${RES_FILE}"
       fi
     fi
   fi

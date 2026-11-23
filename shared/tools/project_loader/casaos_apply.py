@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Validate CasaOS Native Compose (Zero `build:`) & Trigger Safe Host-Keeper Registration."""
+"""Validate CasaOS Native Compose (Zero `build:`) & Trigger Safe Host-Keeper Apply/Install."""
 
 import argparse
 import json
 import pathlib
 import re
+import subprocess
 import sys
 import time
-from typing import Any
+from typing import Any, Callable
 
 DEFAULT_STATE_DIR = pathlib.Path("/mnt/disk1/Workspace/HomeNas/.state")
 DEFAULT_WORKSPACE_ROOT = pathlib.Path("/mnt/disk1/Workspace")
@@ -44,6 +45,26 @@ def validate_casaos_compose(
     return errors
 
 
+def run_apply_with_install_fallback(
+    app_slug: str,
+    compose_path: pathlib.Path,
+    cmd_runner: Callable[[list[str]], tuple[int, str]] | None = None,
+) -> dict[str, Any]:
+    def _default_run(cmd: list[str]) -> tuple[int, str]:
+        p = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        return p.returncode, (p.stdout + p.stderr).strip()
+
+    runner = cmd_runner or _default_run
+    fpath = str(compose_path.resolve())
+    rc, out = runner(["casaos-cli", "app-management", "apply", app_slug, f"--file={fpath}"])
+    if rc == 0:
+        return {"ok": True, "action": "APPLIED", "output": out}
+    if re.search(r"404|not\s+found", out, flags=re.IGNORECASE):
+        irc, iout = runner(["casaos-cli", "app-management", "install", "-f", fpath])
+        return {"ok": irc == 0, "action": "INSTALLED" if irc == 0 else "FAILED_INSTALL", "output": iout}
+    return {"ok": False, "action": "FAILED_APPLY", "output": out}
+
+
 def request_casaos_apply(
     app_slug: str,
     compose_path: pathlib.Path,
@@ -67,7 +88,10 @@ def request_casaos_apply(
     deadline = time.time() + max(0.0, wait_sec)
     while time.time() < deadline:
         if res_file.exists() and res_file.read_text(encoding="utf-8").strip():
-            return {"ok": True, "status": "APPLIED_BY_HOST_KEEPER", "result": res_file.read_text(encoding="utf-8").strip()}
+            txt = res_file.read_text(encoding="utf-8").strip()
+            ok = "APPLIED " in txt or "INSTALLED " in txt or "OK " in txt
+            action = "INSTALLED" if "INSTALLED " in txt else ("APPLIED" if "APPLIED " in txt else "ERROR")
+            return {"ok": ok, "status": action, "result": txt}
         time.sleep(0.5)
 
     return {
@@ -75,7 +99,7 @@ def request_casaos_apply(
         "status": "QUEUED_FOR_HOST_KEEPER",
         "req_file": str(req_file),
         "fallback_web": "CasaOS Web UI -> '+' -> Install a customized app -> Import -> dán casaos-compose.yml -> Submit -> Install",
-        "fallback_ssh": f"casaos-cli app-management apply {app_slug} --file={compose_path.resolve()}",
+        "fallback_ssh": f"casaos-cli app-management install -f {compose_path.resolve()}",
     }
 
 
@@ -85,7 +109,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--file", required=True)
     parser.add_argument("--workspace-root", default=str(DEFAULT_WORKSPACE_ROOT))
     parser.add_argument("--state-dir", default=str(DEFAULT_STATE_DIR))
-    parser.add_argument("--wait", type=float, default=6.0)
+    parser.add_argument("--wait", type=float, default=8.0)
     args = parser.parse_args(argv)
     out = request_casaos_apply(
         app_slug=args.app,

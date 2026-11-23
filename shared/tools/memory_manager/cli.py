@@ -5,6 +5,11 @@ import argparse
 import pathlib
 import sys
 
+# Auto-inject HomeNas repo root into sys.path so direct script calls work without PYTHONPATH
+_REPO_ROOT = str(pathlib.Path(__file__).resolve().parents[3])
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+
 from shared.tools.kanboard_client.service import KanboardService
 from shared.tools.memory_manager.compactor import (
     append_memory_fact,
@@ -17,8 +22,12 @@ from shared.tools.memory_manager.compactor import (
 
 def _resolve_mem_path(dept: str) -> pathlib.Path:
     if dept == "user":
-        return pathlib.Path("shared/memory/USER.md")
-    return pathlib.Path("memory") / dept / "MEMORY.md"
+        return pathlib.Path(_REPO_ROOT) / "shared" / "memory" / "USER.md"
+    direct_child = pathlib.Path("memory") / "MEMORY.md"
+    dept_path = pathlib.Path("memory") / dept / "MEMORY.md"
+    if direct_child.exists() and not dept_path.exists():
+        return direct_child
+    return dept_path
 
 
 def main(argv: list[str] | None = None) -> int:

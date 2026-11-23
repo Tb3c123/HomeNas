@@ -2,6 +2,15 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v2.0.2] - 2026-11-22 *(CasaOS Host Keeper `404→install -f` + Systemd, Memory CLI `PYTHONPATH` Fix & `GEMINI.md` Root Link)*
+### Added
+- `platform/agy-config/casaos-apply-keeper.service`: Unit `systemd` (`User=root`, `Restart=always`) cho Host Keeper tự khởi động cùng Debian host.
+- `shared/tools/project_loader/scaffold.py`: Tự sinh `GEMINI.md` trỏ đúng `@[AGENTS.md](AGENTS.md)` (kèm auto-fix trong `bootstrap_workspace.py`).
+### Fixed
+- `platform/agy-config/casaos_apply_host_keeper.sh` & `casaos_apply.py`: Tự động fallback sang `casaos-cli app-management install -f` khi `apply` trả về `404 Not Found` (cài app mới lần đầu), ghi rõ trạng thái `APPLIED` vs `INSTALLED`.
+- `shared/tools/memory_manager/cli.py`: Tự chèn thư mục gốc `HomeNas` vào `sys.path` để chạy thẳng từ mọi dự án con không cần export `PYTHONPATH`.
+- `shared/templates/DEV_TEAM_RULES.md`: Bổ sung `store_app_id`, `is_uncontrolled: false`, danh sách cổng host cần tránh (`3000`, `8000`, `8085`, `8090`, `8096`) và lưu ý chạy test SQLite trên `/tmp` tránh nghẽn `fsync` USB HDD.
+
 ## [v2.0.1] - 2026-11-22 *(CasaOS Native App 2-File Standard & Safe Host-Keeper Bridge)*
 ### Added
 - `shared/tools/project_loader/casaos_apply.py`, `platform/agy-config/casaos_apply_host_keeper.sh` & `tests/test_casaos_apply.py`: Bộ kiểm chuẩn `casaos-compose.yml` (cấm `build:`, bắt buộc `x-casaos:` & `image:`) kèm cầu nối Host Keeper an toàn (whitelist chỉ chạy `casaos-cli app-management apply` cho file nằm trong `/mnt/disk1/Workspace/`).

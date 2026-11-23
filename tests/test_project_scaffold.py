@@ -58,8 +58,10 @@ class ProjectScaffoldTests(unittest.TestCase):
             self.assertIn("Web bán hàng cá nhân", res["kickoff_prompt"])
             agents_txt = (proj_dir / "AGENTS.md").read_text(encoding="utf-8")
             yaml_txt = (proj_dir / "project.yaml").read_text(encoding="utf-8")
+            gemini_txt = (proj_dir / "GEMINI.md").read_text(encoding="utf-8")
             self.assertIn("/mnt/disk1/Workspace/shared/templates/DEV_TEAM_RULES.md", agents_txt)
             self.assertIn("/mnt/disk1/Workspace/shared/skills/dept-dev", yaml_txt)
+            self.assertIn("@[AGENTS.md](AGENTS.md)", gemini_txt)
             self.assertNotIn("/Workspace/HomeNas/", agents_txt)
             self.assertNotIn("/Workspace/HomeNas/", yaml_txt)
             self.assertEqual(audit_repository(proj_dir), [])
@@ -84,6 +86,7 @@ class ProjectScaffoldTests(unittest.TestCase):
                 "shared_dev_skills: \"/mnt/disk1/Workspace/HomeNas/skills/dept-dev\"\n",
                 encoding="utf-8",
             )
+            (child / "GEMINI.md").write_text("Rule: @[AGENTS.md](.agent/rules/AGENTS.md)\n", encoding="utf-8")
 
             res = bootstrap_workspace_shared(workspace_root=ws)
             self.assertEqual(res["top_symlink"], "linked")
@@ -93,6 +96,7 @@ class ProjectScaffoldTests(unittest.TestCase):
             self.assertTrue((ws / "shared" / "skills" / "dept-dev" / "CATALOG.md").is_file())
             self.assertNotIn("/Workspace/HomeNas/", (child / "AGENTS.md").read_text(encoding="utf-8"))
             self.assertIn("/mnt/disk1/Workspace/shared/skills/dept-dev", (child / "project.yaml").read_text(encoding="utf-8"))
+            self.assertIn("@[AGENTS.md](AGENTS.md)", (child / "GEMINI.md").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

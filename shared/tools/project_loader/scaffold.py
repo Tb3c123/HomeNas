@@ -109,6 +109,11 @@ def scaffold_project(
         f"- **Tự học Hermes (`💾 Memory`):** `python3 /mnt/disk1/Workspace/shared/tools/memory_manager/cli.py add --dept {slug.lower()} --fact \"...\"`.\n",
         encoding="utf-8",
     )
+    (proj_dir / "GEMINI.md").write_text(
+        f"# {name} — Workspace Entrypoint\n\n"
+        f"Tuân thủ đầy đủ quy định dự án tại @[AGENTS.md](AGENTS.md) và hiến pháp dùng chung `/mnt/disk1/Workspace/shared/templates/DEV_TEAM_RULES.md`.\n",
+        encoding="utf-8",
+    )
     prompt = build_kickoff_prompt(name, proj_dir, kb_pid, summary)
     return {"project_dir": str(proj_dir), "kanboard_project_id": kb_pid, "kickoff_prompt": prompt}
 

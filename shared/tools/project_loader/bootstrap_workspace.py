@@ -18,6 +18,7 @@ from typing import Any
 LEGACY_REPLACEMENTS = [
     ("/mnt/disk1/Workspace/HomeNas/shared/", "/mnt/disk1/Workspace/shared/"),
     ("/mnt/disk1/Workspace/HomeNas/skills/dept-dev", "/mnt/disk1/Workspace/shared/skills/dept-dev"),
+    ("@[AGENTS.md](.agent/rules/AGENTS.md)", "@[AGENTS.md](AGENTS.md)"),
 ]
 
 
@@ -52,7 +53,7 @@ def bootstrap_workspace_shared(
         if not child.is_dir() or child.is_symlink() or child.name in (homenas_name, "shared"):
             continue
         touched = False
-        for fname in ("AGENTS.md", "project.yaml"):
+        for fname in ("AGENTS.md", "project.yaml", "GEMINI.md"):
             fpath = child / fname
             if not fpath.is_file():
                 continue

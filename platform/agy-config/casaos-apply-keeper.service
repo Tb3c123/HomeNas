@@ -1,0 +1,17 @@
+[Unit]
+Description=HomeNas Safe CasaOS Native App Apply/Install Host Keeper
+After=network-online.target docker.service casaos-app-management.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/mnt/disk1/Workspace/HomeNas
+ExecStart=/mnt/disk1/Workspace/HomeNas/platform/agy-config/casaos_apply_host_keeper.sh
+Restart=always
+RestartSec=3
+StandardOutput=append:/tmp/casaos_apply_keeper.log
+StandardError=append:/tmp/casaos_apply_keeper.log
+
+[Install]
+WantedBy=multi-user.target
