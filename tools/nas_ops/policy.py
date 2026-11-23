@@ -16,7 +16,7 @@ class ThermalThresholds:
     cpu_warn_c: float = 88.0
     cpu_crit_c: float = 92.0
     cpu_overload_pct: float = 95.0
-    cpu_load5_max: float = 4.0
+    cpu_load5_max: float = 6.0
 
 
 class ThermalPolicyEngine:
@@ -46,7 +46,8 @@ class ThermalPolicyEngine:
         cpu_temp = float(snapshot.get("cpu_temp_c", 0.0))
         cpu_pct = float(snapshot.get("cpu_pct", 0.0))
         load5 = float(snapshot.get("load5", 0.0))
-        is_overload = cpu_pct >= self.t.cpu_overload_pct or load5 > self.t.cpu_load5_max
+        # Eliminate USB I/O-wait false positives: require high real CPU% AND (high load5 OR high CPU temp)
+        is_overload = cpu_pct >= self.t.cpu_overload_pct and (load5 > self.t.cpu_load5_max or cpu_temp >= 80.0)
 
         self.hdd_warm_minutes = (self.hdd_warm_minutes + elapsed_min) if max_hdd >= self.t.hdd_warn_c else 0.0
         self.cpu_warm_minutes = (self.cpu_warm_minutes + elapsed_min) if cpu_temp >= self.t.cpu_warn_c else 0.0
@@ -73,6 +74,8 @@ class ThermalPolicyEngine:
                 self.cool_minutes += elapsed_min
                 if self.cool_minutes >= 10.0:
                     self.level = "RECOVERY"
+                    self.thermal_paused = False
+                    self.cool_minutes = 0.0
             else:
                 self.cool_minutes = 0.0
         else:
@@ -80,7 +83,7 @@ class ThermalPolicyEngine:
             if self.hdd_warm_minutes > 15.0:
                 warn_reasons.append(f"HDD {max_hdd}C > 15m")
             if self.cpu_overload_minutes > 15.0:
-                warn_reasons.append(f"CPU overload > 15m (load {load5})")
+                warn_reasons.append(f"CPU overload > 15m ({cpu_pct}% / load {load5})")
             if self.cpu_warm_minutes > 10.0:
                 warn_reasons.append(f"CPU temp {cpu_temp}C > 10m")
             self.level = "WARNING" if warn_reasons else "NORMAL"
@@ -89,6 +92,7 @@ class ThermalPolicyEngine:
         verdict = {
             "level": self.level,
             "thermal_paused": self.thermal_paused,
+            "soft_throttle": max_hdd >= self.t.hdd_warn_c and not self.thermal_paused,
             "max_hdd_c": max_hdd,
             "cpu_temp_c": cpu_temp,
             "is_overload": is_overload,

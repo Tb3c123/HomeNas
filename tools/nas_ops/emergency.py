@@ -1,7 +1,9 @@
-"""Emergency Container Pause/Stop Executor with Hard Protected-Container Whitelist."""
+"""Emergency Container Pause/Unpause & qBittorrent Thermal Soft-Throttle Executor."""
 
+import http.cookiejar
 import os
 import urllib.error
+import urllib.parse
 import urllib.request
 from typing import Callable
 
@@ -15,6 +17,7 @@ HARD_PROTECTED = {
     "docker-proxy",
 }
 DEFAULT_STOPPABLE = ["qbittorrent", "jellyfin", "radarr", "sonarr", "bazarr"]
+SOFT_THROTTLE_BPS = 2621440  # 2.5 MB/s
 
 
 class EmergencyExecutor:
@@ -53,3 +56,20 @@ class EmergencyExecutor:
             if self.action_runner(container, action):
                 mitigated.append(container)
         return mitigated
+
+    def set_qbit_download_limit(self, limit_bps: int, qbit_url: str | None = None) -> bool:
+        base = (qbit_url or os.environ.get("QBIT_URL", "")).rstrip("/")
+        if not base:
+            return False
+        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+        try:
+            u = os.environ.get("QBIT_USER", "admin")
+            p = os.environ.get("QBIT_PASS", "")
+            if p and p != "replace_with_qbit_password":
+                login_data = urllib.parse.urlencode({"username": u, "password": p}).encode()
+                opener.open(urllib.request.Request(f"{base}/api/v2/auth/login", data=login_data), timeout=4)
+            body = urllib.parse.urlencode({"limit": int(limit_bps)}).encode()
+            with opener.open(urllib.request.Request(f"{base}/api/v2/transfer/setDownloadLimit", data=body), timeout=4) as r:
+                return r.status == 200
+        except (urllib.error.URLError, TimeoutError, OSError):
+            return False

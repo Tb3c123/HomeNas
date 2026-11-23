@@ -6,7 +6,10 @@ import pathlib
 import re
 import shutil
 import subprocess
+import time
 from typing import Any
+
+_LAST_VALID_HDD: dict[str, dict[str, Any]] = {}
 
 
 def read_cpu_temp_c(thermal_root: pathlib.Path = pathlib.Path("/sys/class/thermal")) -> float:
@@ -22,16 +25,35 @@ def read_cpu_temp_c(thermal_root: pathlib.Path = pathlib.Path("/sys/class/therma
     return round(max(temps), 1) if temps else 42.0
 
 
-def read_load_and_ram(proc_root: pathlib.Path = pathlib.Path("/proc")) -> dict[str, float]:
-    load5 = 0.0
-    cpu_pct = 0.0
-    ram_pct = 0.0
+def _read_proc_stat_cpu(proc_root: pathlib.Path) -> tuple[int, int] | None:
+    try:
+        first = (proc_root / "stat").read_text(encoding="utf-8").splitlines()[0].split()
+        if first[0] != "cpu" or len(first) < 6:
+            return None
+        vals = [int(v) for v in first[1:9]]
+        idle_and_iowait = vals[3] + vals[4]
+        total = sum(vals)
+        active = total - idle_and_iowait
+        return active, total
+    except (OSError, ValueError, IndexError):
+        return None
+
+
+def read_load_and_ram(proc_root: pathlib.Path = pathlib.Path("/proc"), sample_delay_sec: float = 0.2) -> dict[str, float]:
+    load5, cpu_pct, ram_pct = 0.0, 0.0, 0.0
     try:
         parts = (proc_root / "loadavg").read_text(encoding="utf-8").split()
         load5 = float(parts[1])
-        cpu_pct = min(100.0, round((float(parts[0]) / 4.0) * 100.0, 1))
     except (OSError, ValueError, IndexError):
         pass
+
+    s1 = _read_proc_stat_cpu(proc_root)
+    if s1 is not None and sample_delay_sec > 0:
+        time.sleep(sample_delay_sec)
+        s2 = _read_proc_stat_cpu(proc_root)
+        if s2 is not None and (s2[1] - s1[1]) > 0:
+            cpu_pct = round(max(0.0, min(100.0, ((s2[0] - s1[0]) / (s2[1] - s1[1])) * 100.0)), 1)
+
     try:
         mem = (proc_root / "meminfo").read_text(encoding="utf-8")
         total = int(re.search(r"MemTotal:\s+(\d+)", mem).group(1))  # type: ignore[union-attr]
@@ -64,22 +86,30 @@ def parse_smartctl_output(returncode: int, stdout: str) -> dict[str, Any]:
     return {"status": "unknown", "temp_c": None}
 
 
-def read_hdd_smart(device_path: str) -> dict[str, Any]:
+def read_hdd_smart(device_path: str, max_stale_cycles: int = 2) -> dict[str, Any]:
     if not pathlib.Path(device_path).exists():
+        _LAST_VALID_HDD.pop(device_path, None)
         return {"device": device_path, "status": "disconnected", "temp_c": None}
     try:
         proc = subprocess.run(
             ["smartctl", "-n", "standby", "-d", "sat", "-A", "-j", device_path],
-            capture_output=True,
-            text=True,
-            timeout=5,
-            check=False,
+            capture_output=True, text=True, timeout=10, check=False,
         )
         res = parse_smartctl_output(proc.returncode, proc.stdout)
         res["device"] = device_path
-        return res
+        if res["status"] in ("active", "standby"):
+            _LAST_VALID_HDD[device_path] = {"res": dict(res), "misses": 0}
+            return res
     except (OSError, subprocess.SubprocessError):
-        return {"device": device_path, "status": "error", "temp_c": None}
+        pass
+
+    cached = _LAST_VALID_HDD.get(device_path)
+    if cached and int(cached.get("misses", 0)) < max_stale_cycles:
+        cached["misses"] = int(cached["misses"]) + 1
+        fallback = dict(cached["res"])
+        fallback["stale_cache"] = True
+        return fallback
+    return {"device": device_path, "status": "error", "temp_c": None}
 
 
 def read_disk_usage_pct(paths: list[str] | None = None) -> dict[str, float]:
@@ -101,9 +131,6 @@ def collect_snapshot() -> dict[str, Any]:
         "cpu_pct": sys_metrics["cpu_pct"],
         "load5": sys_metrics["load5"],
         "ram_pct": sys_metrics["ram_pct"],
-        "hdds": {
-            "disk1": read_hdd_smart(d1),
-            "disk2": read_hdd_smart(d2),
-        },
+        "hdds": {"disk1": read_hdd_smart(d1), "disk2": read_hdd_smart(d2)},
         "disk_usage_pct": read_disk_usage_pct(),
     }

@@ -12,10 +12,12 @@ from typing import Any
 from shared.tools.kanboard_client.service import KanboardService
 from tools.media_ops.arr_monitor import LiveMediaMonitor
 from tools.nas_ops.backup_kanboard import backup_kanboard_sqlite
-from tools.nas_ops.emergency import EmergencyExecutor
+from tools.nas_ops.emergency import SOFT_THROTTLE_BPS, EmergencyExecutor
 from tools.nas_ops.policy import ThermalPolicyEngine
 from tools.nas_ops.reporter import ThermalReporter
 from tools.nas_ops.sensors import collect_snapshot
+
+EMERGENCY_COOLDOWN_SEC = 1800
 
 
 class NasWatchdogCycle:
@@ -26,35 +28,53 @@ class NasWatchdogCycle:
         reporter: ThermalReporter | None = None,
         kb_service: KanboardService | None = None,
         media_monitor: LiveMediaMonitor | None = None,
+        emergency_cooldown_sec: int = EMERGENCY_COOLDOWN_SEC,
     ) -> None:
         self.policy = policy or ThermalPolicyEngine()
         self.emergency = emergency or EmergencyExecutor()
         self.reporter = reporter or ThermalReporter()
         self.kb = kb_service or KanboardService()
         self.media_monitor = media_monitor or LiveMediaMonitor()
+        self.emergency_cooldown_sec = emergency_cooldown_sec
         self._last_flush_day = ""
         self._last_backup_day = ""
         self._last_weekly_label = ""
+        self._last_emergency_tg_ts = 0.0
+        self._throttled = False
 
-    def run_once(self, snapshot: dict[str, Any] | None = None, elapsed_min: float = 3.0) -> dict[str, Any]:
+    def run_once(self, snapshot: dict[str, Any] | None = None, elapsed_min: float = 3.0, now_ts: float | None = None) -> dict[str, Any]:
         snap = snapshot or collect_snapshot()
+        now = float(now_ts if now_ts is not None else time.time())
         verdict = self.policy.evaluate(snap, elapsed_min=elapsed_min)
         self.reporter.record_sample_in_ram(snap, verdict)
         level = verdict["level"]
         reasons = "; ".join(verdict.get("reasons", []))
 
+        if verdict.get("soft_throttle") and not self._throttled:
+            self.emergency.set_qbit_download_limit(SOFT_THROTTLE_BPS)
+            self._throttled = True
+        elif not verdict.get("soft_throttle") and self._throttled and level == "NORMAL":
+            self.emergency.set_qbit_download_limit(0)
+            self._throttled = False
+
         if level == "WARNING":
+            # Zero-Noise: DO NOT send instant Telegram for WARNING (logged in RAM & Kanboard dedup only)
             msg = f"⚠️ [NAS WARNING] HDD:{verdict['max_hdd_c']}C CPU:{verdict['cpu_temp_c']}C | {reasons}"
-            self.reporter.send_telegram(msg)
             self.kb.create_task("[NAS] Thermal/Load Warning", msg, tags=["daily-alert"], dedup_key="nas:thermal", author="watchdog")
         elif level == "EMERGENCY":
             paused = self.emergency.trigger_emergency_mitigation("pause")
-            msg = f"🚨 [NAS EMERGENCY] {reasons} | Auto-paused: {','.join(paused) or 'none'}"
-            self.reporter.send_telegram(msg)
-            self.kb.create_task("[NAS] EMERGENCY Thermal Mitigation", msg, tags=["emergency"], dedup_key="nas:emergency", author="watchdog")
             verdict["mitigated_containers"] = paused
+            msg = f"🚨 [NAS EMERGENCY] {reasons} | Auto-paused: {','.join(paused) or 'none'}"
+            self.kb.create_task("[NAS] EMERGENCY Thermal Mitigation", msg, tags=["emergency"], dedup_key="nas:emergency", author="watchdog")
+            if (now - self._last_emergency_tg_ts) >= self.emergency_cooldown_sec:
+                self.reporter.send_telegram(msg)
+                self._last_emergency_tg_ts = now
         elif level == "RECOVERY":
-            msg = f"✅ [NAS RECOVERY] Cooled down (HDD:{verdict['max_hdd_c']}C). Ready for PO review to unpause."
+            unpaused = self.emergency.trigger_emergency_mitigation("unpause")
+            self.emergency.set_qbit_download_limit(0)
+            self._throttled = False
+            self._last_emergency_tg_ts = 0.0
+            msg = f"✅ [NAS AUTO-RECOVERY] Cooled down (HDD:{verdict['max_hdd_c']}C). Auto-unpaused: {','.join(unpaused) or 'all'}."
             self.reporter.send_telegram(msg)
         verdict["media_alerts"] = self.media_monitor.poll_and_notify(self.reporter.send_telegram)
         return verdict
@@ -78,17 +98,8 @@ class NasWatchdogCycle:
             self._last_backup_day = day
         if now.tm_wday == 6 and now.tm_hour == 20 and now.tm_min < 10 and self._last_weekly_label != week:
             md_path = self.reporter.generate_weekly_markdown(week_label=week)
-            self.kb.create_task(
-                f"[NAS] Weekly Thermal Review {week}",
-                f"File: {md_path}",
-                tags=["weekly-review"],
-                dedup_key=f"weekly:{week}",
-                author="watchdog",
-            )
-            self.reporter.send_telegram(
-                f"📊 [NAS WEEKLY] Đã tổng hợp báo cáo tuần {week} ({md_path}).\n"
-                "Mở antigravity-cli và dán: Chạy weekly-thermal-review cho báo cáo tuần mới nhất."
-            )
+            self.kb.create_task(f"[NAS] Weekly Thermal Review {week}", f"File: {md_path}", tags=["weekly-review"], dedup_key=f"weekly:{week}", author="watchdog")
+            self.reporter.send_telegram(f"📊 [NAS WEEKLY] Đã tổng hợp báo cáo tuần {week} ({md_path}).\nMở antigravity-cli và dán: Chạy weekly-thermal-review cho báo cáo tuần mới nhất.")
             self._last_weekly_label = week
 
 
@@ -104,7 +115,7 @@ def main(argv: list[str] | None = None) -> int:
         cycle = NasWatchdogCycle()
         tg_handler = TelegramCommandHandler(kb_service=cycle.kb)
         threading.Thread(target=tg_handler.run_forever, name="tg-commands", daemon=True).start()
-        print("[homenas-watchdog] Started 3m thermal daemon + 4-command Telegram listener.", flush=True)
+        print("[homenas-watchdog] Started 3m Zero-Noise thermal daemon + 4-command Telegram listener.", flush=True)
         while True:
             try:
                 cycle.run_once(elapsed_min=3.0)

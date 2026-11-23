@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.8.3] - 2026-11-22 *(Zero-Noise Thermal Hotfix: Silent WARNING, USB I/O-Wait Immunity & Emergency Cooldown)*
+### Fixed
+- `tools/nas_ops/inspector_cli.py`, `policy.py`, `sensors.py`, `emergency.py` & `tests/test_sprint2_nas_watchdog.py`: Tắt hoàn toàn gửi Telegram tức thì ở mức `WARNING` (chỉ lưu log RAM cuối ngày + kích hoạt Thermal Soft-Throttle `2.5 MB/s` trên qBittorrent); chỉ gửi Telegram khi thật sự khẩn cấp (`EMERGENCY` kèm cooldown 30 phút chống lặp, và `AUTO-RECOVERY` tự `unpause`); đo `cpu_pct` từ `/proc/stat` loại trừ `iowait` + yêu cầu `cpu_pct >= 95% AND (load5 > 6.0 OR cpu_temp >= 80°C)` để triệt tiêu báo động giả khi USB Acasis bận ghi đĩa; tăng timeout `smartctl` lên `10s` kèm cache 2 chu kỳ chống tụt nhiệt giả `0.0°C`.
+
 ## [v1.8.2] - 2026-11-22 *(Zero-Spam Daily Media Digest at 23:55 & Queue-Clear Notification)*
 ### Changed
 - `tools/media_ops/arr_monitor.py`, `tools/nas_ops/inspector_cli.py` & `tests/test_live_media_monitor.py`: Tắt thông báo Telegram lẻ tẻ khi từng phim tải xong hoặc bị kẹt để chống spam; gom toàn bộ danh sách phim hoàn tất (`completed_today`) và phim bị kẹt (`stalled_today`) vào **1 bản tin Tổng hợp Cuối ngày duy nhất lúc 23:55 (`📊 [MEDIA DAILY DIGEST]`)** (hoặc khi hoàn tất sạch cả hàng đợi `🎉 [MEDIA QUEUE CLEAR]`), đồng thời hiển thị `Xong hôm nay: <N>` ngay trong lệnh `/status`.
