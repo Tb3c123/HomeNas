@@ -13,8 +13,9 @@ from shared.tools.kanboard_client.service import KanboardService
 from tools.media_ops.arr_monitor import LiveMediaMonitor
 from tools.media_ops.dead_torrent_healer import DeadTorrentHealer
 from tools.nas_ops.backup_kanboard import backup_kanboard_sqlite
-from tools.nas_ops.emergency import SOFT_THROTTLE_BPS, EmergencyExecutor
+from tools.nas_ops.emergency import EmergencyExecutor
 from tools.nas_ops.policy import ThermalPolicyEngine
+from tools.nas_ops.qbit_throttle import QbitThrottleController
 from tools.nas_ops.reporter import ThermalReporter
 from tools.nas_ops.sensors import collect_snapshot
 
@@ -30,6 +31,7 @@ class NasWatchdogCycle:
         kb_service: KanboardService | None = None,
         media_monitor: LiveMediaMonitor | None = None,
         dead_healer: DeadTorrentHealer | None = None,
+        qbit_throttle: QbitThrottleController | None = None,
         emergency_cooldown_sec: int = EMERGENCY_COOLDOWN_SEC,
     ) -> None:
         self.policy = policy or ThermalPolicyEngine()
@@ -38,6 +40,7 @@ class NasWatchdogCycle:
         self.kb = kb_service or KanboardService()
         self.media_monitor = media_monitor or LiveMediaMonitor()
         self.dead_healer = dead_healer or DeadTorrentHealer()
+        self.qbit_throttle = qbit_throttle or QbitThrottleController()
         self.emergency_cooldown_sec = emergency_cooldown_sec
         self._last_flush_day = ""
         self._last_backup_day = ""
@@ -54,12 +57,12 @@ class NasWatchdogCycle:
         level = verdict["level"]
         reasons = "; ".join(verdict.get("reasons", []))
 
-        if verdict.get("soft_throttle") and not self._throttled:
-            self.emergency.set_qbit_download_limit(SOFT_THROTTLE_BPS)
-            self._throttled = True
-        elif not verdict.get("soft_throttle") and self._throttled and level == "NORMAL":
-            self.emergency.set_qbit_download_limit(0)
-            self._throttled = False
+        # Stateless reconciliation against live qBittorrent speedLimitsMode (survives restarts)
+        should_throttle = bool(verdict.get("soft_throttle"))
+        if should_throttle or level in ("NORMAL", "RECOVERY"):
+            rec = self.qbit_throttle.reconcile(should_throttle=should_throttle)
+            self._throttled = bool(rec.get("throttled", False))
+            verdict["qbit_throttle"] = rec
 
         if level == "WARNING":
             msg = f"⚠️ [NAS WARNING] HDD:{verdict['max_hdd_c']}C CPU:{verdict['cpu_temp_c']}C | {reasons}"
@@ -74,22 +77,23 @@ class NasWatchdogCycle:
                 self._last_emergency_tg_ts = now
         elif level == "RECOVERY":
             unpaused = self.emergency.trigger_emergency_mitigation("unpause")
-            self.emergency.set_qbit_download_limit(0)
-            self._throttled = False
             self._last_emergency_tg_ts = 0.0
             msg = f"✅ [NAS AUTO-RECOVERY] Cooled down (HDD:{verdict['max_hdd_c']}C). Auto-unpaused: {','.join(unpaused) or 'all'}."
             self.reporter.send_telegram(msg)
+        elif level == "NORMAL" and not verdict.get("thermal_paused"):
+            reconciled = self.emergency.reconcile_paused_containers()
+            if reconciled:
+                verdict["reconciled_unpaused"] = reconciled
 
         verdict["media_alerts"] = self.media_monitor.poll_and_notify(self.reporter.send_telegram)
         self._cycle_count += 1
-        if self._cycle_count % 4 == 0:  # Every 12 minutes (4 x 3m cycles)
+        if self._cycle_count % 4 == 0:
             verdict["healer_alerts"] = self.dead_healer.run_heal_cycle(self.reporter.send_telegram)
         return verdict
 
     def run_scheduled_housekeeping(self) -> None:
         now = time.localtime()
-        day = time.strftime("%Y-%m-%d", now)
-        week = time.strftime("%Y-W%W", now)
+        day, week = time.strftime("%Y-%m-%d", now), time.strftime("%Y-W%W", now)
         if now.tm_hour == 23 and now.tm_min >= 55 and self._last_flush_day != day:
             self.reporter.flush_daily_log_to_ssd(date_str=day)
             self.media_monitor.flush_daily_digest(self.reporter.send_telegram, date_str=day)

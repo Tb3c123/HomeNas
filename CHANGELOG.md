@@ -2,6 +2,10 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v2.0.4] - 2026-11-23 *(Stateless Reconciliation: Fix Stuck qBittorrent 2.56 MB/s Mode & Paused Containers After Restart)*
+### Fixed
+- `tools/nas_ops/qbit_throttle.py`, `emergency.py`, `policy.py`, `inspector_cli.py` & `tests/test_stateless_reconcile.py`: Chuyển sang đối chiếu trạng thái thật (`GET /api/v2/transfer/speedLimitsMode` & Docker `State.Paused`) thay vì chỉ dựa vào cờ `self._throttled` trong RAM — tự động nhả `Alternative Speed Mode = "0"` (mở trần tốc độ) và `unpause` container media bị kẹt ngay cả sau khi `homenas-watchdog` khởi động lại.
+
 ## [v2.0.2] - 2026-11-22 *(CasaOS Host Keeper `404→install -f` + Systemd, Memory CLI `PYTHONPATH` Fix & `GEMINI.md` Root Link)*
 ### Added
 - `platform/agy-config/casaos-apply-keeper.service`: Unit `systemd` (`User=root`, `Restart=always`) cho Host Keeper tự khởi động cùng Debian host.

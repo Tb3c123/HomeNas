@@ -32,7 +32,15 @@ class ThermalPolicyEngine:
         self.cpu_warm_minutes = 0.0
         self.cpu_overload_minutes = 0.0
         self.cool_minutes = 0.0
-        self.thermal_paused = False
+        self.thermal_paused = self._load_persisted_pause()
+
+    def _load_persisted_pause(self) -> bool:
+        if self.state_file.exists():
+            try:
+                return bool(json.loads(self.state_file.read_text(encoding="utf-8")).get("thermal_paused", False))
+            except (json.JSONDecodeError, OSError):
+                return False
+        return False
 
     def evaluate(self, snapshot: dict[str, Any], elapsed_min: float = 3.0) -> dict[str, Any]:
         hdds = snapshot.get("hdds", {})
