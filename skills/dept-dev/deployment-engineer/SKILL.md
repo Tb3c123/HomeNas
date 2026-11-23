@@ -22,3 +22,11 @@ metadata:
 2. **Environment Parity:** Separate code from config (`.env.example` committed, real `.env` gitignored); validate required env vars at startup (fail fast).
 3. **Safe Rollout & Rollback:** Tag releases semantically (`vX.Y.Z`), verify healthcheck post-deploy, and document a 1-command rollback to the previous known-good image/tag.
 4. **Safety First:** Never stop/remove protected core infrastructure containers or run unverified destructive migrations without backup.
+
+## CasaOS Native App Deployment Standard (Zero Legacy App)
+CasaOS marks raw `docker compose up -d` stacks as **Legacy Apps** and **rejects `build:`** in its parser. Always use the 2-file pattern:
+1. **`docker-compose.yml` (Build Only):** Defines `build:` AND explicit `image: <app-slug>-<service>:latest` tags. Run `docker compose build` only — do **NOT** run `docker compose up -d` for production CasaOS apps.
+2. **`casaos-compose.yml` (CasaOS Native Import):**
+   - **Zero `build:` directives** — reference only the pre-built `image: <app-slug>-<service>:latest` tags.
+   - Include root `x-casaos:` (`main`, `title`, `tagline`, `description`, `category`, `port_map`, `index`, `icon`) and service-level `x-casaos:`.
+   - Register via `python3 /mnt/disk1/Workspace/shared/tools/project_loader/casaos_apply.py --app <app-slug> --file /mnt/disk1/Workspace/<app-slug>/casaos-compose.yml` (auto-applies via host keeper or outputs 1-step CasaOS Web Import).

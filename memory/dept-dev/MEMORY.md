@@ -8,3 +8,4 @@
 ## Learned Observations
 - [2026-11-19] Avoid naming local packages `platform` to prevent shadowing Python stdlib `platform`; place shared tools under `shared/tools/` and `tools/`.
 - [2026-11-22] Giữ nguyên mô hình điều phối v1.6.1 hiện tại (không chế thêm cơ chế Handshake); chờ Google Antigravity mở chính thức tính năng Multi-Tab Handshake / Peer-Tab Wakeup trong UI mới phát triển tiếp.
+- [2026-11-23] Chuẩn đóng gói CasaOS Native App (cấm Legacy App): luôn tách 2 file docker-compose.yml (build) + casaos-compose.yml (0 build:, đủ x-casaos:) và đăng ký qua casaos_apply.py / Host Keeper.

@@ -2,6 +2,12 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v2.0.1] - 2026-11-22 *(CasaOS Native App 2-File Standard & Safe Host-Keeper Bridge)*
+### Added
+- `shared/tools/project_loader/casaos_apply.py`, `platform/agy-config/casaos_apply_host_keeper.sh` & `tests/test_casaos_apply.py`: Bộ kiểm chuẩn `casaos-compose.yml` (cấm `build:`, bắt buộc `x-casaos:` & `image:`) kèm cầu nối Host Keeper an toàn (whitelist chỉ chạy `casaos-cli app-management apply` cho file nằm trong `/mnt/disk1/Workspace/`).
+### Changed
+- `shared/templates/DEV_TEAM_RULES.md` & `skills/dept-dev/deployment-engineer/SKILL.md`: Khóa cứng **Chuẩn Đóng Gói CasaOS Native App** (2 tệp `docker-compose.yml` để build + `casaos-compose.yml` không `build:` để đăng ký Native App, cấm tự `docker compose up -d` gây `Legacy App`) tự động đồng bộ tới mọi đội Dev qua `/mnt/disk1/Workspace/shared`.
+
 ## [v2.0.0] - 2026-11-22 *(Auto Dead-Torrent Healer via Radarr/Sonarr & Solo Tech Secretary Topology)*
 ### Added
 - `tools/media_ops/dead_torrent_healer.py` & `tests/test_dead_torrent_healer.py`: Luồng nền tự động mỗi 12 phút trong `homenas-watchdog` kiểm tra torrent active (`downloading`, `stalledDL`, `metaDL`, `missingFiles`, bỏ qua `queuedDL` và `thermal_paused`); với torrent `< 5%` chết `0` seed `> 20 phút` (hoặc `missingFiles`) tự thử `reannounce` + bơm public trackers ở kỳ 1, nếu kỳ sau vẫn kẹt tự gọi API Radarr/Sonarr (`DELETE /api/v3/queue/{id}?removeFromClient=true&blocklist=true&skipRedownload=false`) để gỡ & tìm bản thay thế; bảo vệ không xóa torrent `>= 20%` còn `> 5` seed (chỉ báo nhẹ sau `> 2 tiếng`).
@@ -114,32 +120,9 @@ Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orch
 ### Changed
 - `tools/nas_ops/inspector_cli.py` & `docs/10-casaos-golive-runbook.md`: Tích hợp luồng nền Telegram vào `--daemon` và hướng dẫn chạy `remote_keeper.sh`.
 
-## [v1.0.10] - 2026-11-19 *(Security Backlog Logged)*
+## [v1.0.0–v1.0.10] - 2026-11-19 *(Sprint 1–5 Complete, Safe-Turbo, 4-Frame Workflow & Security Backlog)*
 ### Added
-- `docs/11-backlog-security-hardening.md`: Lưu danh sách nâng cấp bảo mật (Red-Team Threat Model) vào backlog Do Later cho v1.2+.
-
-## [v1.0.9] - 2026-11-19 *(4-Frame Sidebar Workflow & Auto Handoff Prompts)*
-### Added
-- `skills/director/orchestrate-and-digest/SKILL.md` & `AGENTS.md`: Chuẩn hóa quy trình **Lựa chọn B (4 khung sidebar `Main`, `Dept-NasOps`, `Dept-Media`, `Dept-Dev`)** — mỗi khi `Main` tạo thẻ Kanboard sẽ tự động sinh sẵn **Handoff Prompt copy 1 chạm** kèm chỉ dẫn rõ dán vào khung phòng ban nào.
-
-## [v1.0.8] - 2026-11-19 *(Read-Smooth & Plan-Before-Mutate Gate)*
-### Changed
-- `AGENTS.md`: Bổ sung Mục 4 quy chuẩn **Đọc mượt 100% — Trình Action Plan 1 lần trước khi Thêm/Xóa/Sửa**.
-- `platform/agy-config/settings.safe-turbo.json`: Gỡ `docker compose up*` khỏi danh sách `ask` để thực thi trọn gói mượt mà sau khi PO duyệt Action Plan (giữ nguyên khóa cứng `deny` container lõi).
-
-## [v1.0.7] - 2026-11-19 *(Kanboard Real-API Compatibility Hotfix)*
-### Fixed
-- `shared/tools/kanboard_client/bootstrap.py`: Tự động gán `admin` (`user_id=1`) làm `project-manager` cho Project #1 để bảng `HomeNas Operations` hiển thị ngay trên Dashboard Kanboard (`:8085`).
-- `shared/tools/kanboard_client/service.py` & `cli.py`: Ánh xạ `column_id`/`swimlane_id` sang tên cột & Swimlane khi gọi `getAllTasks` thực tế, và bổ sung cờ `--swimlane`/`--col` cho lệnh `create`/`move`.
-
-## [v1.0.6] - 2026-11-19 *(Safe-Turbo CLI Configuration)*
-### Added
-- `platform/agy-config/settings.safe-turbo.json` & `apply_safe_turbo.py`: Chế độ "Safe-Turbo" (`agentMode: accept-edits`, `toolPermission: always-proceed`, `artifactReviewPolicy: always-proceed`) kèm `permissions.deny`/`ask` bảo vệ container lõi (`adguard-home`, `antigravity-cli`...) và công cụ gộp JSON không làm mất cấu hình cũ.
-- `docs/10-casaos-golive-runbook.md` & `tests/test_sprint1_platform.py`: Bổ sung hướng dẫn kích hoạt Safe-Turbo và unit test kiểm chứng gộp cấu hình an toàn.
-
-## [v1.0.0–v1.0.5] - 2026-11-19 *(Sprint 1–5 Complete & Initial Go-Live Hotfixes)*
-### Added
-- Toàn bộ hạ tầng Shared Platform (Sprint 1), NAS Watchdog & Bảo vệ nhiệt độ (Sprint 2), Media Sub-First & Dual-Disk Mirror (Sprint 3), Hermes 3-Tier Memory & 11 Micro-Agents (Sprint 4), Multi-Project Loader (`loader.py`), Runbook CasaOS (`docs/10-casaos-golive-runbook.md`), `AGENTS.md` đa phiên và E2E Dry-Run (`tests/test_sprint5_e2e_dryrun.py`).
+- Toàn bộ hạ tầng Shared Platform (Sprint 1–5), `AGENTS.md`, Safe-Turbo (`apply_safe_turbo.py`), tương thích API Kanboard thực tế, quy chuẩn Read-Smooth / Plan-Before-Mutate, luồng 4 khung Handoff Prompt và backlog bảo mật (`docs/11-backlog-security-hardening.md`).
 
 ---
 *Lịch sử thiết kế Phase 1–4 (`v0.1.0` → `v1.0.0-design-complete`) được lưu trữ tại [`docs/changelog-v0-design.md`](docs/changelog-v0-design.md) để đảm bảo trần ≤ 150 dòng/file.*

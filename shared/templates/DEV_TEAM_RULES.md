@@ -25,3 +25,7 @@
    `python3 /mnt/disk1/Workspace/shared/tools/memory_manager/cli.py <add|patch|remove> --dept <project-slug> ...`
    và **in nguyên dòng badge `💾 Memory [<project-slug>] ➕/✏️ ...` ra khung chat** để PO kiểm chứng.
 4. **Đọc mượt 100% — Trình Action Plan trước khi Sửa:** Tự chạy mượt mọi lệnh chỉ đọc/test/kiểm tra. Trước khi thêm/xóa/sửa code, cấu hình hoặc container, trình **Action Plan `<= 8 dòng`** chờ PO duyệt **1 lần duy nhất**, sau đó tự thực thi trọn gói.
+5. **Chuẩn Đóng Gói CasaOS Native App (Cấm để thành `Legacy App`):** Khi PO yêu cầu build/deploy app lên CasaOS, đội Dev BẮT BUỘC dùng mô hình **2 tệp Compose**:
+   - `docker-compose.yml`: Dùng để build local với `build:` + gắn thẻ `image: <app-slug>-<svc>:latest` (chỉ chạy `docker compose build`, **KHÔNG tự chạy `docker compose up -d`** gây `Legacy App`).
+   - `casaos-compose.yml`: **TUYỆT ĐỐI KHÔNG có trường `build:`**, chỉ trỏ tới các image đã build sẵn (`image: <app-slug>-<svc>:latest`) kèm đầy đủ metadata `x-casaos:` (root & services).
+   - Sau khi PO duyệt deploy, gọi `python3 /mnt/disk1/Workspace/shared/tools/project_loader/casaos_apply.py --app <app-slug> --file /mnt/disk1/Workspace/<app-slug>/casaos-compose.yml` để kiểm chuẩn và đăng ký Native App (tự kích hoạt qua Host Keeper nếu đã bật, hoặc trả sẵn hướng dẫn Import 1 bước trên Web CasaOS).
