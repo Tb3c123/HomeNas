@@ -10,8 +10,8 @@ WorkingDirectory=/mnt/disk1/Workspace/HomeNas
 ExecStart=/mnt/disk1/Workspace/HomeNas/platform/agy-config/casaos_apply_host_keeper.sh
 Restart=always
 RestartSec=3
-StandardOutput=append:/tmp/casaos_apply_keeper.log
-StandardError=append:/tmp/casaos_apply_keeper.log
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
