@@ -56,9 +56,43 @@ class ProjectScaffoldTests(unittest.TestCase):
             self.assertIn("Hướng dẫn 2 bước bắt đầu", res["kickoff_prompt"])
             self.assertIn("Kanboard Project #2", res["kickoff_prompt"])
             self.assertIn("Web bán hàng cá nhân", res["kickoff_prompt"])
-            self.assertIn("DEV_TEAM_RULES.md", (proj_dir / "AGENTS.md").read_text(encoding="utf-8"))
-            self.assertIn("DEV_TEAM_RULES.md", (proj_dir / "project.yaml").read_text(encoding="utf-8"))
+            agents_txt = (proj_dir / "AGENTS.md").read_text(encoding="utf-8")
+            yaml_txt = (proj_dir / "project.yaml").read_text(encoding="utf-8")
+            self.assertIn("/mnt/disk1/Workspace/shared/templates/DEV_TEAM_RULES.md", agents_txt)
+            self.assertIn("/mnt/disk1/Workspace/shared/skills/dept-dev", yaml_txt)
+            self.assertNotIn("/Workspace/HomeNas/", agents_txt)
+            self.assertNotIn("/Workspace/HomeNas/", yaml_txt)
             self.assertEqual(audit_repository(proj_dir), [])
+
+    def test_bootstrap_workspace_shared_symlinks_and_legacy_child_migration(self) -> None:
+        from shared.tools.project_loader.bootstrap_workspace import bootstrap_workspace_shared
+
+        with tempfile.TemporaryDirectory(dir="/tmp") as tmp:
+            ws = pathlib.Path(tmp)
+            (ws / "HomeNas" / "shared" / "templates").mkdir(parents=True)
+            (ws / "HomeNas" / "skills" / "dept-dev").mkdir(parents=True)
+            (ws / "HomeNas" / "shared" / "templates" / "DEV_TEAM_RULES.md").write_text("# Rules\n", encoding="utf-8")
+            (ws / "HomeNas" / "skills" / "dept-dev" / "CATALOG.md").write_text("# Catalog\n", encoding="utf-8")
+
+            child = ws / "stochastic-matrix-lab"
+            child.mkdir()
+            (child / "AGENTS.md").write_text(
+                "Đọc /mnt/disk1/Workspace/HomeNas/shared/templates/DEV_TEAM_RULES.md và /mnt/disk1/Workspace/HomeNas/skills/dept-dev/CATALOG.md\n",
+                encoding="utf-8",
+            )
+            (child / "project.yaml").write_text(
+                "shared_dev_skills: \"/mnt/disk1/Workspace/HomeNas/skills/dept-dev\"\n",
+                encoding="utf-8",
+            )
+
+            res = bootstrap_workspace_shared(workspace_root=ws)
+            self.assertEqual(res["top_symlink"], "linked")
+            self.assertEqual(res["skills_bridge"], "linked")
+            self.assertEqual(res["migrated_projects"], ["stochastic-matrix-lab"])
+            self.assertTrue((ws / "shared" / "templates" / "DEV_TEAM_RULES.md").is_file())
+            self.assertTrue((ws / "shared" / "skills" / "dept-dev" / "CATALOG.md").is_file())
+            self.assertNotIn("/Workspace/HomeNas/", (child / "AGENTS.md").read_text(encoding="utf-8"))
+            self.assertIn("/mnt/disk1/Workspace/shared/skills/dept-dev", (child / "project.yaml").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

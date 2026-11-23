@@ -82,7 +82,7 @@ def check_file_compliance(path: pathlib.Path) -> list[str]:
 def audit_repository(root: pathlib.Path) -> list[str]:
     errors: list[str] = []
     for item in sorted(root.rglob("*")):
-        if any(part in SKIP_DIRS for part in item.parts):
+        if any(part in SKIP_DIRS for part in item.parts) or item.is_symlink():
             continue
         errors.extend(check_file_compliance(item))
     return errors

@@ -56,9 +56,9 @@ def build_kickoff_prompt(project_name: str, project_dir: pathlib.Path, kb_projec
         f"1. Trên giao diện Antigravity, bấm **New Chat / Open Folder** và chọn thư mục: `{project_dir}`\n"
         f"2. Bấm nút **Copy** ở góc phải khung dưới đây, dán vào khung chat mới đó và gửi:\n\n"
         f"```text\n"
-        f"Chào đội ngũ! Hãy khởi động dự án {project_name} (Kanboard Project #{kb_project_id}) theo tệp AGENTS.md trong thư mục này và tệp luật gốc /mnt/disk1/Workspace/HomeNas/shared/templates/DEV_TEAM_RULES.md.\n"
+        f"Chào đội ngũ! Hãy khởi động dự án {project_name} (Kanboard Project #{kb_project_id}) theo tệp AGENTS.md trong thư mục này và tệp luật gốc /mnt/disk1/Workspace/shared/templates/DEV_TEAM_RULES.md.\n"
         f"Mục tiêu sản phẩm của tôi: {goal}.\n"
-        f"Hãy xác nhận đã nạp AGENTS.md, DEV_TEAM_RULES.md, USER.md cùng mục lục 48 skills tại CATALOG.md, và đặt câu hỏi đầu tiên ở Phase 1 - Bước 1.1 để chúng ta bắt đầu thiết kế từng bước.\n"
+        f"Hãy xác nhận đã nạp AGENTS.md, DEV_TEAM_RULES.md, USER.md cùng mục lục 48 skills tại /mnt/disk1/Workspace/shared/skills/dept-dev/CATALOG.md, và đặt câu hỏi đầu tiên ở Phase 1 - Bước 1.1 để chúng ta bắt đầu thiết kế từng bước.\n"
         f"```"
     )
 
@@ -70,6 +70,10 @@ def scaffold_project(
     kb_client: KanboardClient | None = None,
     skip_kanboard: bool = False,
 ) -> dict[str, Any]:
+    from shared.tools.project_loader.bootstrap_workspace import bootstrap_workspace_shared
+
+    if (workspace_root / "HomeNas" / "shared").exists():
+        bootstrap_workspace_shared(workspace_root=workspace_root)
     slug = _slugify(name)
     proj_dir = workspace_root / slug
     (proj_dir / "docs").mkdir(parents=True, exist_ok=True)
@@ -84,11 +88,11 @@ def scaffold_project(
 
     (proj_dir / "project.yaml").write_text(
         f"project:\n  id: {slug.lower()}\n  name: \"{name}\"\n  kanboard_project_id: {kb_pid}\n"
-        f"  shared_rules: \"/mnt/disk1/Workspace/HomeNas/shared/templates/DEV_TEAM_RULES.md\"\n"
+        f"  shared_rules: \"/mnt/disk1/Workspace/shared/templates/DEV_TEAM_RULES.md\"\n"
         f"  constraints:\n    max_lines_per_file: 150\n    max_retry_loops: 2\n"
-        f"memory:\n  user_profile: \"/mnt/disk1/Workspace/HomeNas/shared/memory/USER.md\"\n"
+        f"memory:\n  user_profile: \"/mnt/disk1/Workspace/shared/memory/USER.md\"\n"
         f"  project_memory: \"./memory/MEMORY.md\"\n"
-        f"skills:\n  shared_dev_skills: \"/mnt/disk1/Workspace/HomeNas/skills/dept-dev\"\n",
+        f"skills:\n  shared_dev_skills: \"/mnt/disk1/Workspace/shared/skills/dept-dev\"\n",
         encoding="utf-8",
     )
     (proj_dir / "memory" / "MEMORY.md").write_text(
@@ -99,10 +103,10 @@ def scaffold_project(
     )
     (proj_dir / "AGENTS.md").write_text(
         f"# {name} — Project Identity (`AGENTS.md`)\n\n"
-        f"> **BẮT BUỘC ĐẦU PHIÊN:** Đọc ngay tệp luật gốc `/mnt/disk1/Workspace/HomeNas/shared/templates/DEV_TEAM_RULES.md` để nạp quy trình 11 Micro-Agents, mục lục 48+ Skills (`CATALOG.md`) và toàn bộ Guardrails mới nhất từ `HomeNas`.\n\n"
+        f"> **BẮT BUỘC ĐẦU PHIÊN:** Đọc ngay tệp luật gốc `/mnt/disk1/Workspace/shared/templates/DEV_TEAM_RULES.md` để nạp quy trình 11 Micro-Agents, mục lục 48+ Skills (`/mnt/disk1/Workspace/shared/skills/dept-dev/CATALOG.md`) và toàn bộ Guardrails mới nhất.\n\n"
         f"- **Định danh Dự án:** `{slug.lower()}` (`{name}`) — Bộ nhớ riêng: `./memory/MEMORY.md`.\n"
         f"- **Bảng Kanboard riêng:** Project `#{kb_pid}` (`docker exec homenas-watchdog python3 -m shared.tools.kanboard_client.cli --project-id {kb_pid} ... --author dept-dev`).\n"
-        f"- **Tự học Hermes (`💾 Memory`):** `python3 /mnt/disk1/Workspace/HomeNas/shared/tools/memory_manager/cli.py add --dept {slug.lower()} --fact \"...\"`.\n",
+        f"- **Tự học Hermes (`💾 Memory`):** `python3 /mnt/disk1/Workspace/shared/tools/memory_manager/cli.py add --dept {slug.lower()} --fact \"...\"`.\n",
         encoding="utf-8",
     )
     prompt = build_kickoff_prompt(name, proj_dir, kb_pid, summary)

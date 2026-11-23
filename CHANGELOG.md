@@ -2,6 +2,12 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v1.9.0] - 2026-11-22 *(Option 1+ Canonical `/Workspace/shared` Namespace & Child-Project Auto-Migrator)*
+### Added
+- `shared/tools/project_loader/bootstrap_workspace.py`: Tự động tạo không gian tên ngang hàng `/mnt/disk1/Workspace/shared` (kèm cầu nối `/mnt/disk1/Workspace/shared/skills/dept-dev`) và tự động nâng cấp `AGENTS.md` + `project.yaml` của toàn bộ dự án con hiện có (`HomeManager`, `stochastic-matrix-lab`...) sang đường dẫn `/mnt/disk1/Workspace/shared/...` độc lập, xóa bỏ sự phụ thuộc tên `HomeNas` mà vẫn giữ 1 repo Git cập nhật 1 chạm.
+### Changed
+- `shared/templates/DEV_TEAM_RULES.md`, `shared/tools/project_loader/scaffold.py`, `shared/tools/guardrails/pre_tool_guard.py`, `.gitignore` & `tests/test_project_scaffold.py`: Đồng bộ 100% đường dẫn dự án con về `/mnt/disk1/Workspace/shared/...`.
+
 ## [v1.8.3] - 2026-11-22 *(Zero-Noise Thermal Hotfix: Silent WARNING, USB I/O-Wait Immunity & Emergency Cooldown)*
 ### Fixed
 - `tools/nas_ops/inspector_cli.py`, `policy.py`, `sensors.py`, `emergency.py` & `tests/test_sprint2_nas_watchdog.py`: Tắt hoàn toàn gửi Telegram tức thì ở mức `WARNING` (chỉ lưu log RAM cuối ngày + kích hoạt Thermal Soft-Throttle `2.5 MB/s` trên qBittorrent); chỉ gửi Telegram khi thật sự khẩn cấp (`EMERGENCY` kèm cooldown 30 phút chống lặp, và `AUTO-RECOVERY` tự `unpause`); đo `cpu_pct` từ `/proc/stat` loại trừ `iowait` + yêu cầu `cpu_pct >= 95% AND (load5 > 6.0 OR cpu_temp >= 80°C)` để triệt tiêu báo động giả khi USB Acasis bận ghi đĩa; tăng timeout `smartctl` lên `10s` kèm cache 2 chu kỳ chống tụt nhiệt giả `0.0°C`.
