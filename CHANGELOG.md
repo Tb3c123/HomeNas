@@ -2,6 +2,12 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v2.1.0] - 2026-11-24 *(Curated 76-Skill Zero-Duplicate Dev Library: +12 UI/UX Pro & +16 Research/Algorithms/AI)*
+### Added
+- `skills/dept-dev/` (+28 skill tinh hoa không trùng lặp, nâng tổng từ **48 → 76 skills**, mỗi tệp `≤ 60 dòng`, `model: inherit`, MIT/Apache-2.0): **+12 UI/UX Pro** (`frontend-aesthetic-design`, `design-tokens-oklch`, `typography-and-hierarchy`, `web-interaction-motion`, `ui-critique-and-polish`, `ux-copywriting-microcopy`, `forms-and-validation-ux`, `responsive-layout-architecture`, `react-composition-patterns`, `data-visualization-ux`, `interactive-canvas-svg-ui`, `web-performance-core-vitals`) và **+16 Nghiên cứu / Thuật toán / AI** (`scientific-research-synthesis`, `research-ideation-methodology`, `academic-paper-writing`, `autoresearch-experiment-loop`, `algorithm-design-complexity`, `combinatorial-optimization`, `mathematical-stochastic-modeling`, `numerical-computing-vectorization`, `time-series-forecasting`, `ml-modeling-classical`, `deep-learning-pytorch`, `llm-finetuning-post-training`, `ai-inference-optimization`, `multimodal-vision-audio-ai`, `ai-safety-guardrails-alignment`, `vector-hybrid-search-engineering`).
+### Changed
+- `skills/dept-dev/CATALOG.md`, `shared/templates/DEV_TEAM_RULES.md`, `shared/tools/project_loader/scaffold.py` & `tests/test_dev_skills_pack.py`: Nâng cấp mục lục Lazy-Load 8 lĩnh vực (76/76 skills, không trùng lặp, tự đồng bộ Live-Link tới toàn bộ dự án con qua `/mnt/disk1/Workspace/shared`).
+
 ## [v2.0.4] - 2026-11-23 *(Stateless Reconciliation: Fix Stuck qBittorrent 2.56 MB/s Mode & Paused Containers After Restart)*
 ### Fixed
 - `tools/nas_ops/qbit_throttle.py`, `emergency.py`, `policy.py`, `inspector_cli.py` & `tests/test_stateless_reconcile.py`: Chuyển sang đối chiếu trạng thái thật (`GET /api/v2/transfer/speedLimitsMode` & Docker `State.Paused`) thay vì chỉ dựa vào cờ `self._throttled` trong RAM — tự động nhả `Alternative Speed Mode = "0"` (mở trần tốc độ) và `unpause` container media bị kẹt ngay cả sau khi `homenas-watchdog` khởi động lại.

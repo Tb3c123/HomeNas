@@ -58,7 +58,7 @@ def build_kickoff_prompt(project_name: str, project_dir: pathlib.Path, kb_projec
         f"```text\n"
         f"Chào đội ngũ! Hãy khởi động dự án {project_name} (Kanboard Project #{kb_project_id}) theo tệp AGENTS.md trong thư mục này và tệp luật gốc /mnt/disk1/Workspace/shared/templates/DEV_TEAM_RULES.md.\n"
         f"Mục tiêu sản phẩm của tôi: {goal}.\n"
-        f"Hãy xác nhận đã nạp AGENTS.md, DEV_TEAM_RULES.md, USER.md cùng mục lục 48 skills tại /mnt/disk1/Workspace/shared/skills/dept-dev/CATALOG.md, và đặt câu hỏi đầu tiên ở Phase 1 - Bước 1.1 để chúng ta bắt đầu thiết kế từng bước.\n"
+        f"Hãy xác nhận đã nạp AGENTS.md, DEV_TEAM_RULES.md, USER.md cùng mục lục 76 skills tại /mnt/disk1/Workspace/shared/skills/dept-dev/CATALOG.md, và đặt câu hỏi đầu tiên ở Phase 1 - Bước 1.1 để chúng ta bắt đầu thiết kế từng bước.\n"
         f"```"
     )
 
@@ -103,7 +103,7 @@ def scaffold_project(
     )
     (proj_dir / "AGENTS.md").write_text(
         f"# {name} — Project Identity (`AGENTS.md`)\n\n"
-        f"> **BẮT BUỘC ĐẦU PHIÊN:** Đọc ngay tệp luật gốc `/mnt/disk1/Workspace/shared/templates/DEV_TEAM_RULES.md` để nạp quy trình 11 Micro-Agents, mục lục 48+ Skills (`/mnt/disk1/Workspace/shared/skills/dept-dev/CATALOG.md`) và toàn bộ Guardrails mới nhất.\n\n"
+        f"> **BẮT BUỘC ĐẦU PHIÊN:** Đọc ngay tệp luật gốc `/mnt/disk1/Workspace/shared/templates/DEV_TEAM_RULES.md` để nạp quy trình 11 Micro-Agents, mục lục 76 Skills (`/mnt/disk1/Workspace/shared/skills/dept-dev/CATALOG.md`) và toàn bộ Guardrails mới nhất.\n\n"
         f"- **Định danh Dự án:** `{slug.lower()}` (`{name}`) — Bộ nhớ riêng: `./memory/MEMORY.md`.\n"
         f"- **Bảng Kanboard riêng:** Project `#{kb_pid}` (`docker exec homenas-watchdog python3 -m shared.tools.kanboard_client.cli --project-id {kb_pid} ... --author dept-dev`).\n"
         f"- **Tự học Hermes (`💾 Memory`):** `python3 /mnt/disk1/Workspace/shared/tools/memory_manager/cli.py add --dept {slug.lower()} --fact \"...\"`.\n",
