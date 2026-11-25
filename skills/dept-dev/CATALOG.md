@@ -1,8 +1,8 @@
-# Dev Team Skill Catalog (Lazy-Load Index — 76 Skills)
+# Dev Team Skill Catalog (Lazy-Load Index — 78 Skills)
 
-> Chỉ đọc đúng 1–2 `SKILL.md` cần cho tác vụ hiện tại để tiết kiệm quota. Mọi skill đều `<= 60 dòng`, `model: inherit`, tuyển chọn 100% không trùng lặp từ các kho MIT / Apache-2.0 tốt nhất (`anthropics/skills`, `ui-ux-pro-max`, `impeccable`, `vercel-labs`, `K-Dense-AI`, `Orchestra-Research`, `rmyndharis/antigravity-skills`).
+> Chỉ đọc đúng 1–2 `SKILL.md` cần cho tác vụ hiện tại để tiết kiệm quota. Mọi skill đều `<= 60 dòng`, `model: inherit`, tuyển chọn 100% không trùng lặp từ các kho MIT / Apache-2.0 tốt nhất (`anthropics/skills`, `ui-ux-pro-max`, `impeccable`, `vercel-labs`, `K-Dense-AI`, `Orchestra-Research`, `rmyndharis/antigravity-skills`, `anhnx000/viet-nhu-nguoi`, `vitali87/code-graph-rag`).
 
-## 1. Quy trình, Sản phẩm & Kiến trúc Hệ thống (9 Skills)
+## 1. Quy trình, Sản phẩm & Kiến trúc Hệ thống (10 Skills)
 | Skill (`skills/dept-dev/<name>/SKILL.md`) | Trọng tâm |
 | :--- | :--- |
 | `micro-agent-swarm` | Điều phối 11 Micro-Agents, ≤ 150 dòng/file, max 2 vòng sửa |
@@ -14,6 +14,7 @@
 | `performance-engineer` | Profiling BE, p95/p99 latency, caching, memory bounds |
 | `monorepo-architect` | Acyclic package graph, shared libs, affected-only CI |
 | `docs-architect` | Technical specs, ADR, Mermaid diagrams, Changelog |
+| `viet-nhu-nguoi` | Viết & biên tập tiếng Việt tự nhiên (bỏ giọng AI), `scan.py` & `check_facts.py` |
 
 ## 2. UI/UX Sạch, Đẹp & Tương Tác Chuẩn (15 Skills)
 | Skill | Trọng tâm |
@@ -88,10 +89,11 @@
 | `react-native-architecture` | Typed navigation, FlashList, offline sync, SecureStore |
 | `bash-pro` | Defensive Bash (`set -euo pipefail`), quoting, `trap` cleanup |
 
-## 7. Chất lượng, Kiểm thử, Debug & Bảo mật (9 Skills)
+## 7. Chất lượng, Kiểm thử, Debug & Bảo mật (10 Skills)
 | Skill | Trọng tâm |
 | :--- | :--- |
 | `code-review-excellence` | Review theo mức độ Blocking/Important/Minor & refactor sạch |
+| `code-graph-rag` | Phân tích AST/Call-Graph đa ngôn ngữ qua `mcp-code-graph-rag` (SQLite, không Memgraph) |
 | `tdd-orchestrator` | TDD Red-Green-Refactor & bounded retry loops |
 | `python-testing-patterns` | `pytest`, fixtures, fakes, cache `/tmp` |
 | `e2e-testing-patterns` | Playwright semantic locators, POM, flake-free E2E |

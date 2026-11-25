@@ -2,6 +2,9 @@
 
 Tất cả thay đổi quan trọng của dự án **HomeNas (Smart Home AI Orchestrator)** được ghi nhận tại đây theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/).
 
+## [v2.2.0] - 2026-11-25 *(78 Dev Skills & 5 MCP Plugins: `viet-nhu-nguoi` + Lightweight `code-graph-rag`)*
+- **Added:** Skill #77 `viet-nhu-nguoi` (`SKILL.md` + `scripts/scan.py` & `check_facts.py`, MIT); Skill #78 `code-graph-rag` (`SKILL.md`, MIT) & On-Demand MCP Plugin #5 `mcp-code-graph-rag` (`SQLITE_GRAPH_PATH=/mnt/disk1/Workspace/.cache/cgr/graph.sqlite`, không Memgraph/semantic) trong `sync_mcp_plugins.py`.
+- **Changed:** Cập nhật `CATALOG.md` (76→78), `DEV_TEAM_RULES.md`, `scaffold.py`, `test_dev_skills_pack.py` & `test_mcp_plugins.py`.
 ## [v2.1.0] - 2026-11-24 *(Curated 76-Skill Zero-Duplicate Dev Library: +12 UI/UX Pro & +16 Research/Algorithms/AI)*
 ### Added
 - `skills/dept-dev/` (+28 skill tinh hoa không trùng lặp, nâng tổng từ **48 → 76 skills**, mỗi tệp `≤ 60 dòng`, `model: inherit`, MIT/Apache-2.0): **+12 UI/UX Pro** (`frontend-aesthetic-design`, `design-tokens-oklch`, `typography-and-hierarchy`, `web-interaction-motion`, `ui-critique-and-polish`, `ux-copywriting-microcopy`, `forms-and-validation-ux`, `responsive-layout-architecture`, `react-composition-patterns`, `data-visualization-ux`, `interactive-canvas-svg-ui`, `web-performance-core-vitals`) và **+16 Nghiên cứu / Thuật toán / AI** (`scientific-research-synthesis`, `research-ideation-methodology`, `academic-paper-writing`, `autoresearch-experiment-loop`, `algorithm-design-complexity`, `combinatorial-optimization`, `mathematical-stochastic-modeling`, `numerical-computing-vectorization`, `time-series-forecasting`, `ml-modeling-classical`, `deep-learning-pytorch`, `llm-finetuning-post-training`, `ai-inference-optimization`, `multimodal-vision-audio-ai`, `ai-safety-guardrails-alignment`, `vector-hybrid-search-engineering`).

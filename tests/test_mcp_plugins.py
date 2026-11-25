@@ -1,4 +1,4 @@
-"""Unit Tests for v1.8.0: 4 Dev MCP Plugins Sync & Pure-Python Read-Only SQLite MCP Server."""
+"""Unit Tests for Dev MCP Plugins Sync (5 Plugins) & Pure-Python Read-Only SQLite MCP Server."""
 
 import importlib.util
 import json
@@ -72,12 +72,12 @@ class McpPluginsAndSqliteRoTests(unittest.TestCase):
             self.assertTrue(call_blocked["result"]["isError"])
             self.assertIn("Blocked", call_blocked["result"]["content"][0]["text"])
 
-    def test_sync_mcp_plugins_creates_4_manifests_and_preserves_toggle_state(self) -> None:
+    def test_sync_mcp_plugins_creates_5_manifests_and_preserves_toggle_state(self) -> None:
         sync_mod = _load_sync_module()
         with tempfile.TemporaryDirectory(dir="/tmp") as tmp:
             cfg_root = pathlib.Path(tmp) / "config"
             res1 = sync_mod.sync_mcp_plugins(config_root=cfg_root, repo_root=REPO_ROOT)
-            expected = {"mcp-context7", "mcp-github", "mcp-sqlite-ro", "mcp-playwright"}
+            expected = {"mcp-context7", "mcp-github", "mcp-sqlite-ro", "mcp-playwright", "mcp-code-graph-rag"}
             self.assertEqual(set(res1["enabled_map"].keys()), expected)
             self.assertTrue(all(v is False for v in res1["enabled_map"].values()))
 
@@ -86,6 +86,12 @@ class McpPluginsAndSqliteRoTests(unittest.TestCase):
                 self.assertTrue((pdir / "plugin.json").is_file())
                 self.assertTrue((pdir / "mcp_config.json").is_file())
                 self.assertTrue((pdir / "config.json").is_file())
+
+            cgr_cfg = json.loads((cfg_root / "plugins" / "mcp-code-graph-rag" / "mcp_config.json").read_text(encoding="utf-8"))
+            cgr_srv = cgr_cfg["mcpServers"]["code-graph-rag"]
+            self.assertEqual(cgr_srv["command"], "code-graph-rag")
+            self.assertEqual(cgr_srv["args"], ["mcp-server"])
+            self.assertEqual(cgr_srv["env"]["SQLITE_GRAPH_PATH"], "/mnt/disk1/Workspace/.cache/cgr/graph.sqlite")
 
             # Enable mcp-context7 and mcp-sqlite-ro, then re-sync without args -> must preserve enabled state
             res2 = sync_mod.sync_mcp_plugins(

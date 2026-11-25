@@ -1,15 +1,16 @@
-"""Verify the curated 76-skill Dev Team library (frontmatter, line cap, catalog sync)."""
+"""Verify the curated 78-skill Dev Team library (frontmatter, line cap, catalog sync & scripts)."""
 
+import importlib.util
 import pathlib
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 SKILLS_DIR = REPO_ROOT / "skills" / "dept-dev"
 
 EXPECTED_SKILLS = {
-    # 1. Process, Product & Systems Architecture (9)
+    # 1. Process, Product & Systems Architecture (10)
     "micro-agent-swarm", "context-driven-development", "architecture-patterns",
     "api-design-principles", "microservices-patterns", "event-sourcing-architect",
-    "performance-engineer", "monorepo-architect", "docs-architect",
+    "performance-engineer", "monorepo-architect", "docs-architect", "viet-nhu-nguoi",
     # 2. UI/UX Pro & Interaction Design (15)
     "ui-ux-designer", "frontend-aesthetic-design", "design-tokens-oklch",
     "typography-and-hierarchy", "tailwind-design-system", "web-interaction-motion",
@@ -36,8 +37,8 @@ EXPECTED_SKILLS = {
     "python-pro", "fastapi-pro", "typescript-pro", "frontend-developer",
     "nodejs-backend-patterns", "golang-pro", "rust-pro", "java-pro", "csharp-pro",
     "flutter-expert", "react-native-architecture", "bash-pro",
-    # 7. Quality, Testing, Debugging & Security (9)
-    "code-review-excellence", "tdd-orchestrator", "python-testing-patterns",
+    # 7. Quality, Testing, Debugging & Security (10)
+    "code-review-excellence", "code-graph-rag", "tdd-orchestrator", "python-testing-patterns",
     "e2e-testing-patterns", "debugging-strategies", "error-handling-patterns",
     "security-auditor", "auth-implementation-patterns", "threat-modeling-expert",
     # 8. DevOps, Cloud, Git & Observability (5)
@@ -47,7 +48,7 @@ EXPECTED_SKILLS = {
 
 
 def test_dev_skills_pack_completeness_and_frontmatter():
-    assert len(EXPECTED_SKILLS) == 76
+    assert len(EXPECTED_SKILLS) == 78
     found = {p.name for p in SKILLS_DIR.iterdir() if p.is_dir()}
     assert EXPECTED_SKILLS.issubset(found), f"Missing skills: {EXPECTED_SKILLS - found}"
 
@@ -64,3 +65,24 @@ def test_dev_skills_pack_completeness_and_frontmatter():
         assert "description:" in content, f"{skill}/SKILL.md missing description"
         assert "model: sonnet" not in content and "model: opus" not in content
         assert catalog_text.count(f"`{skill}`") == 1, f"{skill} missing or duplicated in CATALOG.md"
+
+
+def test_viet_nhu_nguoi_scan_and_check_facts():
+    scripts = SKILLS_DIR / "viet-nhu-nguoi" / "scripts"
+    scan_spec = importlib.util.spec_from_file_location("vnn_scan", scripts / "scan.py")
+    facts_spec = importlib.util.spec_from_file_location("vnn_facts", scripts / "check_facts.py")
+    assert scan_spec and scan_spec.loader and facts_spec and facts_spec.loader
+    scan_mod = importlib.util.module_from_spec(scan_spec)
+    facts_mod = importlib.util.module_from_spec(facts_spec)
+    scan_spec.loader.exec_module(scan_mod)
+    facts_spec.loader.exec_module(facts_mod)
+
+    ai_res = scan_mod.scan_text("Tất nhiên rồi! Trong bối cảnh hiện nay, công cụ này không chỉ nhanh mà còn nâng tầm giá trị.")
+    assert ai_res["score"] > 20
+    clean_res = scan_mod.scan_text("Hệ thống đã chạy ổn định từ 08:00 sáng nay, nhiệt độ ổ cứng giữ ở 55 độ.")
+    assert clean_res["score"] == 0
+
+    ok_res = facts_mod.compare_facts("Bản v2.2.0 có 78 skills, không dùng Memgraph.", "Bản v2.2.0 gồm 78 skills và không chạy Memgraph.")
+    assert ok_res["ok"] is True
+    bad_res = facts_mod.compare_facts("Tốc độ đạt 2.5 MB/s tại https://example.com", "Tốc độ rất nhanh.")
+    assert bad_res["ok"] is False and "numbers" in bad_res["missing_facts"]

@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Sync & Manage the 4 HomeNas Dev MCP Plugins for Antigravity CLI (/root/.gemini/config).
+"""Sync & Manage the 5 HomeNas Dev MCP Plugins for Antigravity CLI (/root/.gemini/config).
 
 Plugins installed (default disabled=True to keep Main/NAS Ops/Media contexts lean):
-1. mcp-context7   (Streamable HTTP -> https://mcp.context7.com/mcp)
-2. mcp-github     (Streamable HTTP -> https://api.githubcopilot.com/mcp/)
-3. mcp-sqlite-ro  (Local Python 3.11 Stdio -> shared/tools/mcp_servers/sqlite_ro_mcp.py)
-4. mcp-playwright (On-Demand Docker Streamable HTTP -> http://playwright-mcp:8931/mcp)
+1. mcp-context7       (Streamable HTTP -> https://mcp.context7.com/mcp)
+2. mcp-github         (Streamable HTTP -> https://api.githubcopilot.com/mcp/)
+3. mcp-sqlite-ro      (Local Python 3.11 Stdio -> shared/tools/mcp_servers/sqlite_ro_mcp.py)
+4. mcp-playwright     (On-Demand Docker Streamable HTTP -> http://playwright-mcp:8931/mcp)
+5. mcp-code-graph-rag (On-Demand Stdio -> code-graph-rag mcp-server + SQLite graph, no Memgraph)
 """
 
 import argparse
@@ -22,6 +23,7 @@ DEFAULT_REPO_ROOT = pathlib.Path("/mnt/disk1/Workspace/HomeNas")
 def build_plugin_definitions(repo_root: pathlib.Path = DEFAULT_REPO_ROOT) -> dict[str, dict[str, Any]]:
     sqlite_script = str(repo_root / "shared" / "tools" / "mcp_servers" / "sqlite_ro_mcp.py")
     pw_url = os.environ.get("PLAYWRIGHT_MCP_URL", "http://playwright-mcp:8931/mcp")
+    cgr_db = os.environ.get("SQLITE_GRAPH_PATH", "/mnt/disk1/Workspace/.cache/cgr/graph.sqlite")
     return {
         "mcp-context7": {
             "title": "Context7 Live Docs MCP",
@@ -64,6 +66,17 @@ def build_plugin_definitions(repo_root: pathlib.Path = DEFAULT_REPO_ROOT) -> dic
                 }
             },
         },
+        "mcp-code-graph-rag": {
+            "title": "Code-Graph-RAG AST & Call-Graph MCP (On-Demand SQLite)",
+            "description": "Lightweight Tree-sitter + ast-grep MCP using embedded SQLite (no Memgraph/semantic).",
+            "mcpServers": {
+                "code-graph-rag": {
+                    "command": "code-graph-rag",
+                    "args": ["mcp-server"],
+                    "env": {"SQLITE_GRAPH_PATH": cgr_db, "CGR_CAPTURE": "io", "PYTHONDONTWRITEBYTECODE": "1"},
+                }
+            },
+        },
     }
 
 
@@ -98,7 +111,7 @@ def sync_mcp_plugins(
 
         plugin_json = {
             "name": name,
-            "version": "1.8.0",
+            "version": "2.2.0",
             "title": spec["title"],
             "description": spec["description"],
             "mcpConfigPath": "mcp_config.json",
@@ -114,7 +127,7 @@ def sync_mcp_plugins(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="sync-mcp-plugins", description="Sync HomeNas 4 Dev MCP Plugins")
+    parser = argparse.ArgumentParser(prog="sync-mcp-plugins", description="Sync HomeNas 5 Dev MCP Plugins")
     parser.add_argument("--config-root", default=str(DEFAULT_CONFIG_ROOT))
     parser.add_argument("--repo-root", default=str(DEFAULT_REPO_ROOT))
     parser.add_argument("--enable", nargs="*", default=[], help="Plugin names to enable")

@@ -7,14 +7,15 @@
 - **Architecture & Coding:** `dev-architect` (Clean/Hexagonal/ADR/API Contract), `dev-backend`, `dev-frontend`, `dev-refactor` (Code Review & chống phình dòng).
 - **QA, Security & Delivery:** `dev-qa-tester` (TDD Red-Green-Refactor), `dev-security-reviewer` (OWASP/STRIDE/Secrets), `dev-devops` (Docker/CI-CD/Rollback), `dev-docs-curator` (Docs/Mermaid/Changelog).
 
-## 2. Cơ chế Nạp Ngữ cảnh & 76 Dev Skills (Lazy Load qua `/Workspace/shared`)
+## 2. Cơ chế Nạp Ngữ cảnh & 78 Dev Skills (Lazy Load qua `/Workspace/shared`)
 1. **Đầu phiên:** Đọc `/mnt/disk1/Workspace/shared/memory/USER.md` + `./memory/MEMORY.md` của dự án hiện tại.
-2. **Tra cứu Kỹ năng:** Đọc bảng mục lục `/mnt/disk1/Workspace/shared/skills/dept-dev/CATALOG.md` (76 skills qua 8 lĩnh vực) và **chỉ mở đúng 1–2 tệp `SKILL.md` phù hợp với tác vụ đang làm**.
-3. **Bộ 4 MCP Plugins Chuyên Dụng (`sync_mcp_plugins.py`):** Mặc định tắt (`disabled: true`) để giữ nhẹ ngữ cảnh cho `Main/NAS/Media`; bật theo nhu cầu dự án Dev (`agy plugin enable <name>`):
+2. **Tra cứu Kỹ năng:** Đọc bảng mục lục `/mnt/disk1/Workspace/shared/skills/dept-dev/CATALOG.md` (78 skills qua 8 lĩnh vực) và **chỉ mở đúng 1–2 tệp `SKILL.md` phù hợp với tác vụ đang làm**.
+3. **Bộ 5 MCP Plugins Chuyên Dụng (`sync_mcp_plugins.py`):** Mặc định tắt (`disabled: true`) để giữ nhẹ ngữ cảnh cho `Main/NAS/Media`; bật theo nhu cầu dự án Dev (`agy plugin enable <name>`):
    - `mcp-context7`: Tra cứu tài liệu thư viện phiên bản mới nhất (`https://mcp.context7.com/mcp`).
    - `mcp-github`: Quản lý PR/Issue/Actions qua `GITHUB_PERSONAL_ACCESS_TOKEN`.
    - `mcp-sqlite-ro`: Soi DB SQLite (`Kanboard`, `*arr`, project DB) ở chế độ **Read-Only 3 lớp** (`/mnt/disk1/Workspace/shared/tools/mcp_servers/sqlite_ro_mcp.py`).
    - `mcp-playwright`: Kiểm thử giao diện Web headless qua container on-demand (`playwright-mcp` `:8931`).
+   - `mcp-code-graph-rag`: Phân tích AST/Call-Graph đa ngôn ngữ qua `code-graph-rag[treesitter-full,ast-grep]` (`uv tool install --python 3.12`) + SQLite nhúng (`SQLITE_GRAPH_PATH=/mnt/disk1/Workspace/.cache/cgr/graph.sqlite`, không Memgraph/semantic).
 4. **Giao tiếp Liên-Agent:** Bàn giao qua Contract Files gọn (`<= 60 dòng`) và gói tin `STATUS | FILE | ACTION`. Tối đa **2 vòng tự sửa (`MAX_RETRY_LOOPS = 2`)** giữa Coder và QA/Reviewer; nếu vẫn lỗi thì gắn `blocked` trên Kanboard và báo PO.
 
 ## 3. Ràng buộc Cứng & Tự học Minh bạch (Hard Guardrails)
