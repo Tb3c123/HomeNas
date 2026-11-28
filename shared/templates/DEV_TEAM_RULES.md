@@ -9,7 +9,7 @@
 
 ## 2. Cơ chế Nạp Ngữ cảnh & 78 Dev Skills (Lazy Load qua `/Workspace/shared`)
 1. **Đầu phiên:** Đọc `/mnt/disk1/Workspace/shared/memory/USER.md` + `./memory/MEMORY.md` của dự án hiện tại.
-2. **Tra cứu Kỹ năng:** Đọc bảng mục lục `/mnt/disk1/Workspace/shared/skills/dept-dev/CATALOG.md` (78 skills qua 8 lĩnh vực) và **chỉ mở đúng 1–2 tệp `SKILL.md` phù hợp với tác vụ đang làm**.
+2. **Tra cứu Kỹ năng & Badge Minh Bạch (`🧩 Skills`):** Đọc bảng mục lục `/mnt/disk1/Workspace/shared/skills/dept-dev/CATALOG.md` (78 skills qua 8 lĩnh vực) và **chỉ mở đúng 1–2 tệp `SKILL.md` phù hợp với tác vụ đang làm**. Bắt buộc in 1 dòng `🧩 Skills: <tên-skill-1>, <tên-skill-2>` (hoặc `🧩 Skills: none`) ngay đầu Action Plan / phản hồi để PO kiểm chứng tức thì.
 3. **Bộ 5 MCP Plugins Chuyên Dụng (`sync_mcp_plugins.py`):** Mặc định tắt (`disabled: true`) để giữ nhẹ ngữ cảnh cho `Main/NAS/Media`; bật theo nhu cầu dự án Dev (`agy plugin enable <name>`):
    - `mcp-context7`: Tra cứu tài liệu thư viện phiên bản mới nhất (`https://mcp.context7.com/mcp`).
    - `mcp-github`: Quản lý PR/Issue/Actions qua `GITHUB_PERSONAL_ACCESS_TOKEN`.
