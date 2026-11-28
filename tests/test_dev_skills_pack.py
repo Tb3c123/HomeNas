@@ -1,4 +1,4 @@
-"""Verify the curated 78-skill Dev Team library (frontmatter, line cap, catalog sync & scripts)."""
+"""Verify the curated 79-skill Dev Team library (frontmatter, line cap, catalog sync & scripts)."""
 
 import importlib.util
 import pathlib
@@ -11,8 +11,8 @@ EXPECTED_SKILLS = {
     "micro-agent-swarm", "context-driven-development", "architecture-patterns",
     "api-design-principles", "microservices-patterns", "event-sourcing-architect",
     "performance-engineer", "monorepo-architect", "docs-architect", "viet-nhu-nguoi",
-    # 2. UI/UX Pro & Interaction Design (15)
-    "ui-ux-designer", "frontend-aesthetic-design", "design-tokens-oklch",
+    # 2. UI/UX Pro & Interaction Design (16)
+    "ui-ux-designer", "design-md-system", "frontend-aesthetic-design", "design-tokens-oklch",
     "typography-and-hierarchy", "tailwind-design-system", "web-interaction-motion",
     "ui-critique-and-polish", "ux-copywriting-microcopy", "forms-and-validation-ux",
     "responsive-layout-architecture", "react-composition-patterns",
@@ -48,7 +48,7 @@ EXPECTED_SKILLS = {
 
 
 def test_dev_skills_pack_completeness_and_frontmatter():
-    assert len(EXPECTED_SKILLS) == 78
+    assert len(EXPECTED_SKILLS) == 79
     found = {p.name for p in SKILLS_DIR.iterdir() if p.is_dir()}
     assert EXPECTED_SKILLS.issubset(found), f"Missing skills: {EXPECTED_SKILLS - found}"
 

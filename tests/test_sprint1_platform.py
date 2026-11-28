@@ -109,6 +109,12 @@ class Sprint1PlatformTests(unittest.TestCase):
             long_file.write_text("\n".join(f"x = {i}" for i in range(155)), encoding="utf-8")
             self.assertTrue(check_file_compliance(long_file))
 
+            design_ok = pathlib.Path(tmp) / "DESIGN.md"
+            design_ok.write_text("\n".join(f"- token {i}" for i in range(320)), encoding="utf-8")
+            self.assertEqual(check_file_compliance(design_ok), [])
+            design_ok.write_text("\n".join(f"- token {i}" for i in range(1005)), encoding="utf-8")
+            self.assertTrue(check_file_compliance(design_ok))
+
         self.assertEqual(audit_repository(pathlib.Path(".")), [])
 
     def test_safe_turbo_config_and_lossless_merge(self) -> None:

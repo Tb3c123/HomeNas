@@ -60,6 +60,8 @@ class ProjectScaffoldTests(unittest.TestCase):
             yaml_txt = (proj_dir / "project.yaml").read_text(encoding="utf-8")
             gemini_txt = (proj_dir / "GEMINI.md").read_text(encoding="utf-8")
             self.assertIn("/mnt/disk1/Workspace/shared/templates/DEV_TEAM_RULES.md", agents_txt)
+            self.assertIn("./DESIGN.md", agents_txt)
+            self.assertIn("design-md-system", agents_txt)
             self.assertIn("/mnt/disk1/Workspace/shared/skills/dept-dev", yaml_txt)
             self.assertIn("@[AGENTS.md](AGENTS.md)", gemini_txt)
             self.assertNotIn("/Workspace/HomeNas/", agents_txt)

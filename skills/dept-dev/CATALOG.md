@@ -1,6 +1,6 @@
-# Dev Team Skill Catalog (Lazy-Load Index — 78 Skills)
+# Dev Team Skill Catalog (Lazy-Load Index — 79 Skills)
 
-> Chỉ đọc đúng 1–2 `SKILL.md` cần cho tác vụ hiện tại để tiết kiệm quota. Mọi skill đều `<= 60 dòng`, `model: inherit`, tuyển chọn 100% không trùng lặp từ các kho MIT / Apache-2.0 tốt nhất (`anthropics/skills`, `ui-ux-pro-max`, `impeccable`, `vercel-labs`, `K-Dense-AI`, `Orchestra-Research`, `rmyndharis/antigravity-skills`, `anhnx000/viet-nhu-nguoi`, `vitali87/code-graph-rag`).
+> Chỉ đọc đúng 1–2 `SKILL.md` cần cho tác vụ hiện tại để tiết kiệm quota. Mọi skill đều `<= 60 dòng`, `model: inherit`, tuyển chọn 100% không trùng lặp từ các kho MIT / Apache-2.0 tốt nhất (`anthropics/skills`, `ui-ux-pro-max`, `impeccable`, `vercel-labs`, `K-Dense-AI`, `Orchestra-Research`, `rmyndharis/antigravity-skills`, `anhnx000/viet-nhu-nguoi`, `vitali87/code-graph-rag`, `VoltAgent/awesome-design-md`).
 
 ## 1. Quy trình, Sản phẩm & Kiến trúc Hệ thống (10 Skills)
 | Skill (`skills/dept-dev/<name>/SKILL.md`) | Trọng tâm |
@@ -16,10 +16,11 @@
 | `docs-architect` | Technical specs, ADR, Mermaid diagrams, Changelog |
 | `viet-nhu-nguoi` | Viết & biên tập tiếng Việt tự nhiên (bỏ giọng AI), `scan.py` & `check_facts.py` |
 
-## 2. UI/UX Sạch, Đẹp & Tương Tác Chuẩn (15 Skills)
+## 2. UI/UX Sạch, Đẹp & Tương Tác Chuẩn (16 Skills)
 | Skill | Trọng tâm |
 | :--- | :--- |
 | `ui-ux-designer` | User flow, wireframe, IA, trạng thái component cơ bản |
+| `design-md-system` | Thiết lập `./DESIGN.md` từ `getdesign.md` (MIT) / Google Stitch trước khi dựng UI |
 | `frontend-aesthetic-design` | Thẩm mỹ có chủ đích, chống "AI slop", visual hierarchy sạch |
 | `design-tokens-oklch` | Hệ màu OKLCH đều mắt, tinted neutrals, dark/light surface |
 | `typography-and-hierarchy` | Font pairing, modular scale, measure `45–75ch`, `tabular-nums` |

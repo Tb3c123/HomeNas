@@ -45,6 +45,10 @@ def _is_skill_markdown(path: pathlib.Path) -> bool:
     return path.name == "SKILL.md" and "skills" in path.parts
 
 
+def _is_extended_markdown(path: pathlib.Path) -> bool:
+    return _is_skill_markdown(path) or path.name == "DESIGN.md"
+
+
 def check_command_safety(command_str: str) -> list[str]:
     errors: list[str] = []
     for pattern, msg in FORBIDDEN_PATTERNS:
@@ -66,11 +70,12 @@ def check_file_compliance(path: pathlib.Path) -> list[str]:
         return []
     lines = text.splitlines()
     errors: list[str] = []
-    cap = MAX_SKILL_LINES if _is_skill_markdown(path) else MAX_LINES
+    extended = _is_extended_markdown(path)
+    cap = MAX_SKILL_LINES if extended else MAX_LINES
     if len(lines) > cap:
         errors.append(f"{path}: {len(lines)} lines exceeds cap of {cap} lines.")
-    if _is_skill_markdown(path) and len(text.encode("utf-8")) > MAX_SKILL_BYTES:
-        errors.append(f"{path}: exceeds {MAX_SKILL_BYTES} bytes cap for SKILL.md.")
+    if extended and len(text.encode("utf-8")) > MAX_SKILL_BYTES:
+        errors.append(f"{path}: exceeds {MAX_SKILL_BYTES} bytes cap for {path.name}.")
     code_exts = {".py", ".sh", ".js", ".ts", ".jsx", ".tsx", ".css"}
     if path.suffix in code_exts:
         for idx, line in enumerate(lines, start=1):
@@ -112,7 +117,7 @@ def main() -> int:
     target = payload.get("TargetFile")
     target_path = pathlib.Path(target) if target else None
     if isinstance(content, str) and (not target_path or target_path.name not in EXEMPT_NAMES):
-        cap = MAX_SKILL_LINES if (target_path and _is_skill_markdown(target_path)) else MAX_LINES
+        cap = MAX_SKILL_LINES if (target_path and _is_extended_markdown(target_path)) else MAX_LINES
         if len(content.splitlines()) > cap:
             errs.append(f"Blocked write: content has {len(content.splitlines())} lines (> {cap}).")
     if errs:
